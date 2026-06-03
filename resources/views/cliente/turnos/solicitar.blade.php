@@ -1,261 +1,261 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Solicitar Turno')
-
-@section('breadcrumb')
-    <li class="breadcrumb-item"><a href="{{ route('cliente.turnos.index') }}">Mis Turnos</a></li>
-    <li class="breadcrumb-item active">Solicitar Turno</li>
-@endsection
+@section('topbar-title', 'Solicitar Turno')
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <h4 class="fw-bold mb-1"><i class="bi bi-calendar-plus me-2 text-danger"></i>Solicitar Turno</h4>
-        <p class="text-muted mb-4">Completá el formulario para reservar tu turno.</p>
-
-        {{-- Barra de progreso --}}
-        <div class="d-flex gap-1 mb-4" id="barra-progreso">
-            @foreach(['Mis datos','Vehículo','Servicio','Agenda','Confirmar'] as $i => $paso)
-            <div class="flex-grow-1 text-center" style="font-size:.75rem">
-                <div class="rounded-circle mx-auto mb-1 d-flex align-items-center justify-content-center fw-bold"
-                     id="step-circle-{{ $i }}"
-                     style="width:32px;height:32px;background:{{ $i===0?'#C0392B':'#e5e7eb' }};color:{{ $i===0?'white':'#9ca3af' }}">
-                    {{ $i + 1 }}
-                </div>
-                <span id="step-label-{{ $i }}" class="{{ $i===0?'text-danger fw-semibold':'text-muted' }}">
-                    {{ $paso }}
-                </span>
-            </div>
-            @if($i < 4)
-            <div class="flex-grow-1 d-flex align-items-center" style="padding-bottom:20px">
-                <div style="height:2px;background:#e5e7eb;width:100%"></div>
-            </div>
-            @endif
-            @endforeach
+<div class="page-header">
+    <div class="page-header-top">
+        <div>
+            <div class="page-eyebrow">Portal del Cliente</div>
+            <h1 class="page-title">Solicitar Turno</h1>
+            <p class="page-subtitle">Completá los datos para reservar tu turno</p>
         </div>
-
-        <form method="POST" action="{{ route('cliente.turnos.guardar') }}" id="formTurno">
-            @csrf
-
-            {{-- PASO 1: Datos personales --}}
-            <div class="card mb-3 paso" id="paso-0">
-                <div class="card-header fw-semibold"><i class="bi bi-person me-2"></i>1. Mis Datos</div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->name }}" readonly>
-                            <input type="hidden" name="nombre_cliente" value="{{ auth()->user()->name }}">
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label fw-semibold">Apellido <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->apellido }}" readonly>
-                        </div>
-                        <div class="col-sm-4">
-                            <label class="form-label fw-semibold">DNI</label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->dni }}" readonly>
-                        </div>
-                        <div class="col-sm-4">
-                            <label class="form-label fw-semibold">Teléfono</label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->telefono }}" readonly>
-                        </div>
-                        <div class="col-sm-4">
-                            <label class="form-label fw-semibold">Correo electrónico</label>
-                            <input type="text" class="form-control" value="{{ auth()->user()->email }}" readonly>
-                        </div>
-                    </div>
-                    <div class="text-end mt-3">
-                        <button type="button" class="btn btn-taller" onclick="irAPaso(1)">
-                            Siguiente <i class="bi bi-chevron-right ms-1"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- PASO 2: Vehículo --}}
-            <div class="card mb-3 paso d-none" id="paso-1">
-                <div class="card-header fw-semibold"><i class="bi bi-car-front me-2"></i>2. Mi Vehículo</div>
-                <div class="card-body">
-                    @if($vehiculos->isNotEmpty())
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">¿Usás un vehículo registrado?</label>
-                        <select name="vehiculo_id" id="vehiculo_id" class="form-select" onchange="toggleNuevoVehiculo(this.value)">
-                            <option value="">Agregar nuevo vehículo</option>
-                            @foreach($vehiculos as $v)
-                                <option value="{{ $v->id }}" {{ old('vehiculo_id') == $v->id ? 'selected' : '' }}>
-                                    {{ $v->marca->nombre }} {{ $v->modelo->nombre }} {{ $v->anio }} – {{ $v->patente }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-                    @endif
-
-                    <div id="nuevo-vehiculo">
-                        <div class="row g-3">
-                            <div class="col-sm-6">
-                                <label class="form-label fw-semibold">Marca <span class="text-danger">*</span></label>
-                                <select name="marca_id" id="marca_select" class="form-select">
-                                    <option value="">Seleccioná la marca...</option>
-                                    @foreach($marcas as $marca)
-                                        <option value="{{ $marca->id }}" {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
-                                            {{ $marca->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label fw-semibold">Modelo <span class="text-danger">*</span></label>
-                                <select name="modelo_id" id="modelo_select" class="form-select">
-                                    <option value="">Primero seleccioná la marca</option>
-                                </select>
-                            </div>
-                            <div class="col-sm-4">
-                                <label class="form-label fw-semibold">Año <span class="text-danger">*</span></label>
-                                <input type="number" name="anio" class="form-control" value="{{ old('anio') }}"
-                                    min="1990" max="{{ date('Y') + 1 }}">
-                            </div>
-                            <div class="col-sm-4">
-                                <label class="form-label fw-semibold">Patente <span class="text-danger">*</span></label>
-                                <input type="text" name="patente" class="form-control"
-                                    value="{{ old('patente') }}" placeholder="ABC123" style="text-transform:uppercase">
-                            </div>
-                            <div class="col-sm-4">
-                                <label class="form-label fw-semibold">Kilometraje <span class="text-danger">*</span></label>
-                                <input type="number" name="kilometraje" class="form-control" value="{{ old('kilometraje') }}" min="0">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary" onclick="irAPaso(0)">
-                            <i class="bi bi-chevron-left me-1"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-taller" onclick="irAPaso(2)">
-                            Siguiente <i class="bi bi-chevron-right ms-1"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- PASO 3: Tipo de servicio --}}
-            <div class="card mb-3 paso d-none" id="paso-2">
-                <div class="card-header fw-semibold"><i class="bi bi-tools me-2"></i>3. Tipo de Servicio</div>
-                <div class="card-body">
-                    <div class="row g-3 mb-3">
-                        @foreach([
-                            ['mantenimiento_preventivo', 'Mantenimiento Preventivo', 'bi-gear', 'primary'],
-                            ['reparacion', 'Reparación', 'bi-wrench-adjustable', 'danger'],
-                            ['diagnostico', 'Diagnóstico', 'bi-search', 'info'],
-                            ['service', 'Service', 'bi-check-all', 'success'],
-                            ['otros', 'Otros', 'bi-three-dots', 'secondary'],
-                        ] as [$val, $label, $icon, $color])
-                        <div class="col-sm-4">
-                            <input type="radio" name="tipo_servicio" id="ts_{{ $val }}" value="{{ $val }}"
-                                class="btn-check" {{ old('tipo_servicio') === $val ? 'checked' : '' }}>
-                            <label class="btn btn-outline-{{ $color }} w-100 py-3" for="ts_{{ $val }}">
-                                <i class="bi {{ $icon }} d-block fs-4 mb-1"></i>
-                                {{ $label }}
-                            </label>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Descripción del problema <span class="text-muted small">(opcional)</span></label>
-                        <textarea name="observaciones" class="form-control" rows="3"
-                            placeholder="Describí brevemente el problema o servicio que necesitás...">{{ old('observaciones') }}</textarea>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-secondary" onclick="irAPaso(1)">
-                            <i class="bi bi-chevron-left me-1"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-taller" onclick="irAPaso(3)">
-                            Siguiente <i class="bi bi-chevron-right ms-1"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- PASO 4: Selección de fecha/hora --}}
-            <div class="card mb-3 paso d-none" id="paso-3">
-                <div class="card-header fw-semibold"><i class="bi bi-calendar me-2"></i>4. Elegí tu Turno</div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-sm-6">
-                            <label class="form-label fw-semibold">Fecha y hora del turno <span class="text-danger">*</span></label>
-                            <input type="datetime-local" name="fecha_hora_turno" id="fecha_hora_turno"
-                                class="form-control @error('fecha_hora_turno') is-invalid @enderror"
-                                value="{{ old('fecha_hora_turno') }}"
-                                min="{{ now()->addHour()->format('Y-m-d\TH:i') }}"
-                                required>
-                            @error('fecha_hora_turno')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="text-muted small mt-1">
-                                <i class="bi bi-info-circle me-1"></i>
-                                Horarios de atención: Lun–Vie 8:00–18:00, Sáb 8:00–13:00
-                            </div>
-                        </div>
-                    </div>
-                    <div class="d-flex gap-2 mt-3">
-                        <button type="button" class="btn btn-outline-secondary" onclick="irAPaso(2)">
-                            <i class="bi bi-chevron-left me-1"></i> Anterior
-                        </button>
-                        <button type="button" class="btn btn-taller" onclick="irAPaso(4)">
-                            Siguiente <i class="bi bi-chevron-right ms-1"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {{-- PASO 5: Confirmación --}}
-            <div class="card mb-3 paso d-none" id="paso-4">
-                <div class="card-header fw-semibold"><i class="bi bi-check-circle me-2"></i>5. Confirmar Turno</div>
-                <div class="card-body">
-                    <div class="alert alert-info py-2 small">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Revisá los datos antes de confirmar. Una vez confirmado, podés cancelar hasta con <strong>48 hs de anticipación</strong>.
-                    </div>
-                    <div id="resumen-turno" class="mb-3">
-                        <p class="text-muted small">← Completá los pasos anteriores para ver el resumen.</p>
-                    </div>
-                    <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline-secondary" onclick="irAPaso(3)">
-                            <i class="bi bi-chevron-left me-1"></i> Anterior
-                        </button>
-                        <button type="submit" class="btn btn-taller px-4">
-                            <i class="bi bi-check-circle me-1"></i> Confirmar Turno
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
+        <a href="{{ route('cliente.dashboard') }}" class="btn-secondary-ta">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
     </div>
 </div>
 
-<style>
-    .btn-taller { background:#C0392B; color:#fff; border:none; }
-    .btn-taller:hover { background:#96281B; color:#fff; }
-</style>
+{{-- Barra de pasos --}}
+<div style="display:flex; align-items:center; margin-bottom:28px; gap:0" id="pasos-bar">
+    @foreach(['Mis Datos','Vehículo','Servicio','Fecha','Confirmar'] as $i => $paso)
+    <div style="flex:1; text-align:center; position:relative">
+        <div id="step-circle-{{ $i }}"
+             style="width:36px; height:36px; border-radius:50%; margin:0 auto 6px;
+             display:flex; align-items:center; justify-content:center;
+             font-family:'Oswald',sans-serif; font-size:.85rem; font-weight:600;
+             transition: all .3s;
+             background:{{ $i===0 ? '#1255a1' : '#e8f0f8' }};
+             color:{{ $i===0 ? 'white' : '#5a7a95' }};
+             box-shadow:{{ $i===0 ? '0 4px 12px rgba(18,85,161,.35)' : 'none' }}">
+            {{ $i + 1 }}
+        </div>
+        <div id="step-label-{{ $i }}" style="font-size:.72rem; {{ $i===0 ? 'color:var(--blue); font-weight:600' : 'color:var(--muted)' }}">
+            {{ $paso }}
+        </div>
+    </div>
+    @if($i < 4)
+    <div style="height:2px; width:40px; background:var(--border); flex-shrink:0; margin-bottom:22px"></div>
+    @endif
+    @endforeach
+</div>
+
+<form method="POST" action="{{ route('cliente.turnos.guardar') }}" id="formTurno" style="max-width:700px">
+    @csrf
+
+    {{-- PASO 0: Mis datos --}}
+    <div class="ta-card paso" id="paso-0" style="margin-bottom:16px">
+        <div class="ta-card-header">
+            <div class="ta-card-title"><i class="bi bi-person" style="color:var(--blue)"></i> 1. Mis Datos</div>
+        </div>
+        <div style="padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:14px">
+            @foreach([['Nombre','name',auth()->user()->name],['Apellido','apellido',auth()->user()->apellido],['DNI','dni',auth()->user()->dni],['Teléfono','telefono',auth()->user()->telefono]] as [$label,$name,$val])
+            <div>
+                <label class="ta-label">{{ $label }}</label>
+                <input type="text" class="ta-input" value="{{ $val }}" readonly
+                    style="background:var(--card); color:var(--muted); cursor:not-allowed">
+            </div>
+            @endforeach
+            <div style="grid-column:span 2">
+                <label class="ta-label">Correo electrónico</label>
+                <input type="text" class="ta-input" value="{{ auth()->user()->email }}" readonly
+                    style="background:var(--card); color:var(--muted); cursor:not-allowed">
+            </div>
+        </div>
+        <div style="padding:0 20px 20px; display:flex; justify-content:flex-end">
+            <button type="button" class="btn-primary-ta" onclick="irAPaso(1)">
+                Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    {{-- PASO 1: Vehículo --}}
+    <div class="ta-card paso" id="paso-1" style="display:none; margin-bottom:16px">
+        <div class="ta-card-header">
+            <div class="ta-card-title"><i class="bi bi-car-front" style="color:var(--blue)"></i> 2. Mi Vehículo</div>
+        </div>
+        <div style="padding:20px">
+            @if($vehiculos->isNotEmpty())
+            <div style="margin-bottom:16px">
+                <label class="ta-label">Usá un vehículo registrado</label>
+                <select name="vehiculo_id" id="vehiculo_id" class="ta-input ta-select" onchange="toggleNuevoVehiculo(this.value)">
+                    <option value="">Agregar nuevo vehículo</option>
+                    @foreach($vehiculos as $v)
+                    <option value="{{ $v->id }}" {{ old('vehiculo_id') == $v->id ? 'selected' : '' }}>
+                        {{ $v->marca->nombre }} {{ $v->modelo->nombre }} {{ $v->anio }} — {{ $v->patente }}
+                    </option>
+                    @endforeach
+                </select>
+            </div>
+            <div id="separador" style="display:flex; align-items:center; gap:12px; margin-bottom:16px; color:var(--muted); font-size:.8rem">
+                <div style="flex:1; height:1px; background:var(--border)"></div> o ingresá uno nuevo <div style="flex:1; height:1px; background:var(--border)"></div>
+            </div>
+            @endif
+
+            <div id="nuevo-vehiculo">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+                    <div>
+                        <label class="ta-label">Marca <span class="req">*</label>
+                        <select name="marca_id" id="marca_select" class="ta-input ta-select">
+                            <option value="">Seleccioná la marca...</option>
+                            @foreach($marcas as $marca)
+                            <option value="{{ $marca->id }}" {{ old('marca_id') == $marca->id ? 'selected' : '' }}>
+                                {{ $marca->nombre }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="ta-label">Modelo <span class="req">*</label>
+                        <select name="modelo_id" id="modelo_select" class="ta-input ta-select">
+                            <option value="">Primero elegí la marca</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="ta-label">Año <span class="req">*</label>
+                        <input type="number" name="anio" class="ta-input" value="{{ old('anio') }}"
+                            min="1990" max="{{ date('Y') + 1 }}" placeholder="{{ date('Y') }}">
+                    </div>
+                    <div>
+                        <label class="ta-label">Patente <span class="req">*</label>
+                        <input type="text" name="patente" class="ta-input" value="{{ old('patente') }}"
+                            placeholder="ABC123" style="text-transform:uppercase">
+                    </div>
+                    <div>
+                        <label class="ta-label">Kilometraje <span class="req">*</label>
+                        <input type="number" name="kilometraje" class="ta-input" value="{{ old('kilometraje') }}" min="0" placeholder="Ej: 85000">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="padding:0 20px 20px; display:flex; justify-content:space-between">
+            <button type="button" class="btn-secondary-ta" onclick="irAPaso(0)">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button type="button" class="btn-primary-ta" onclick="irAPaso(2)">
+                Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    {{-- PASO 2: Servicio --}}
+    <div class="ta-card paso" id="paso-2" style="display:none; margin-bottom:16px">
+        <div class="ta-card-header">
+            <div class="ta-card-title"><i class="bi bi-tools" style="color:var(--blue)"></i> 3. Tipo de Servicio</div>
+        </div>
+        <div style="padding:20px">
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:18px">
+                @foreach([
+                    ['mantenimiento_preventivo','bi-gear','Mantenimiento Preventivo','Cambio de aceite, filtros, revisión general'],
+                    ['reparacion','bi-wrench-adjustable','Reparación','Arreglo de fallas o problemas detectados'],
+                    ['diagnostico','bi-search','Diagnóstico','Revisión para detectar problemas'],
+                    ['service','bi-check-all','Service','Service completo del vehículo'],
+                    ['otros','bi-three-dots','Otros','Otro tipo de servicio'],
+                ] as [$val,$icon,$titulo,$desc])
+                <label style="cursor:pointer">
+                    <input type="radio" name="tipo_servicio" value="{{ $val }}" class="d-none tipo-radio"
+                        {{ old('tipo_servicio') === $val ? 'checked' : '' }}>
+                    <div class="servicio-card" style="padding:14px; border:2px solid var(--border); border-radius:10px; text-align:center; transition:all .18s">
+                        <i class="bi {{ $icon }}" style="font-size:1.5rem; color:var(--blue); display:block; margin-bottom:6px"></i>
+                        <div style="font-weight:600; font-size:.84rem; color:var(--navy); margin-bottom:3px">{{ $titulo }}</div>
+                        <div style="font-size:.72rem; color:var(--muted); line-height:1.3">{{ $desc }}</div>
+                    </div>
+                </label>
+                @endforeach
+            </div>
+            <div>
+                <label class="ta-label">Descripción del problema <span style="color:var(--muted); font-weight:400">(opcional)</label>
+                <textarea name="observaciones" class="ta-input ta-textarea"
+                    placeholder="Describí brevemente el problema o lo que necesitás que le revisen al auto...">{{ old('observaciones') }}</textarea>
+            </div>
+        </div>
+        <div style="padding:0 20px 20px; display:flex; justify-content:space-between">
+            <button type="button" class="btn-secondary-ta" onclick="irAPaso(1)">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button type="button" class="btn-primary-ta" onclick="irAPaso(3)">
+                Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    {{-- PASO 3: Fecha --}}
+    <div class="ta-card paso" id="paso-3" style="display:none; margin-bottom:16px">
+        <div class="ta-card-header">
+            <div class="ta-card-title"><i class="bi bi-calendar" style="color:var(--blue)"></i> 4. Elegí el Horario</div>
+        </div>
+        <div style="padding:20px">
+            <div style="max-width:320px">
+                <label class="ta-label">Fecha y hora del turno <span class="req">*</label>
+                <input type="datetime-local" name="fecha_hora_turno" id="fecha_hora_turno"
+                    class="ta-input {{ $errors->has('fecha_hora_turno') ? 'is-invalid' : '' }}"
+                    value="{{ old('fecha_hora_turno') }}"
+                    min="{{ now()->addHour()->format('Y-m-d\TH:i') }}" required>
+                @error('fecha_hora_turno')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
+            </div>
+            <div style="margin-top:14px; background:var(--card); border:1px solid var(--border); border-radius:9px; padding:12px 16px; font-size:.84rem; color:var(--muted)">
+                <i class="bi bi-info-circle" style="margin-right:6px; color:var(--blue)"></i>
+                <strong>Horarios de atención:</strong> Lunes a Viernes 8:00–18:00 hs · Sábados 8:00–13:00 hs
+            </div>
+        </div>
+        <div style="padding:0 20px 20px; display:flex; justify-content:space-between">
+            <button type="button" class="btn-secondary-ta" onclick="irAPaso(2)">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button type="button" class="btn-primary-ta" onclick="irAPaso(4)">
+                Siguiente <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    {{-- PASO 4: Confirmar --}}
+    <div class="ta-card paso" id="paso-4" style="display:none; margin-bottom:16px">
+        <div class="ta-card-header">
+            <div class="ta-card-title"><i class="bi bi-check-circle" style="color:var(--ok)"></i> 5. Confirmar Turno</div>
+        </div>
+        <div style="padding:20px">
+            <div class="ta-alert info" style="margin-bottom:16px">
+                <span class="ta-alert-icon"><i class="bi bi-info-circle-fill"></i>
+                <div>Revisá los datos antes de confirmar. Podés cancelar con hasta <strong>48 horas de anticipación</strong>. Tenés un máximo de <strong>2 cancelaciones por mes</strong>.</div>
+            </div>
+            <div id="resumen" style="background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px">
+                <p style="color:var(--muted); font-size:.84rem; text-align:center">← Completá los pasos anteriores</p>
+            </div>
+        </div>
+        <div style="padding:0 20px 20px; display:flex; justify-content:space-between">
+            <button type="button" class="btn-secondary-ta" onclick="irAPaso(3)">
+                <i class="bi bi-chevron-left"></i> Anterior
+            </button>
+            <button type="submit" class="btn-ok-ta">
+                <i class="bi bi-check-circle"></i> Confirmar Turno
+            </button>
+        </div>
+    </div>
+</form>
 
 @push('scripts')
 <script>
 let pasoActual = 0;
 
 function irAPaso(num) {
-    document.getElementById('paso-' + pasoActual).classList.add('d-none');
-    document.getElementById('paso-' + num).classList.remove('d-none');
+    document.getElementById('paso-' + pasoActual).style.display = 'none';
+    document.getElementById('paso-' + num).style.display = 'block';
 
-    // Actualizar barra progreso
     for (let i = 0; i <= 4; i++) {
         const circle = document.getElementById('step-circle-' + i);
         const label  = document.getElementById('step-label-' + i);
         if (i <= num) {
-            circle.style.background = '#C0392B';
+            circle.style.background = '#1255a1';
             circle.style.color = 'white';
-            label.className = 'text-danger fw-semibold';
+            circle.style.boxShadow = '0 4px 12px rgba(18,85,161,.35)';
+            label.style.color = 'var(--blue)';
+            label.style.fontWeight = '600';
         } else {
-            circle.style.background = '#e5e7eb';
-            circle.style.color = '#9ca3af';
-            label.className = 'text-muted';
+            circle.style.background = '#e8f0f8';
+            circle.style.color = '#5a7a95';
+            circle.style.boxShadow = 'none';
+            label.style.color = 'var(--muted)';
+            label.style.fontWeight = '400';
         }
     }
 
@@ -265,27 +265,46 @@ function irAPaso(num) {
 }
 
 function actualizarResumen() {
-    const fecha  = document.getElementById('fecha_hora_turno')?.value;
+    const fecha  = document.getElementById('fecha_hora_turno')?.value?.replace('T', ' ');
     const servEl = document.querySelector('input[name="tipo_servicio"]:checked');
     const vehicId = document.getElementById('vehiculo_id')?.value;
+    const vehicSel = vehicId ? document.getElementById('vehiculo_id')?.options[document.getElementById('vehiculo_id')?.selectedIndex]?.text : null;
 
-    let html = '<table class="table table-sm table-borderless">';
-    if (fecha) html += `<tr><td class="text-muted">Fecha/hora</td><td>${fecha.replace('T',' ')}</td></tr>`;
-    if (servEl) html += `<tr><td class="text-muted">Servicio</td><td>${servEl.value.replace(/_/g,' ')}</td></tr>`;
-    if (vehicId) html += `<tr><td class="text-muted">Vehículo</td><td>${document.getElementById('vehiculo_id').options[document.getElementById('vehiculo_id').selectedIndex].text}</td></tr>`;
+    let html = '<table style="width:100%; font-size:.88rem; border-collapse:collapse">';
+    if (fecha) html += `<tr><td style="padding:6px 0; color:var(--muted); width:40%">Fecha y hora</td><td style="padding:6px 0; font-weight:600; color:var(--navy)">${fecha}</td></tr>`;
+    if (servEl) html += `<tr><td style="padding:6px 0; color:var(--muted)">Servicio</td><td style="padding:6px 0; font-weight:600; color:var(--navy)">${servEl.value.replace(/_/g,' ')}</td></tr>`;
+    if (vehicSel && vehicId) html += `<tr><td style="padding:6px 0; color:var(--muted)">Vehículo</td><td style="padding:6px 0; font-weight:600; color:var(--navy)">${vehicSel}</td></tr>`;
     html += '</table>';
-    document.getElementById('resumen-turno').innerHTML = html;
+    document.getElementById('resumen').innerHTML = html;
 }
+
+// Mostrar selección de servicio
+document.querySelectorAll('.tipo-radio').forEach(radio => {
+    radio.addEventListener('change', function() {
+        document.querySelectorAll('.servicio-card').forEach(c => {
+            c.style.borderColor = 'var(--border)';
+            c.style.background = 'white';
+        });
+        this.nextElementSibling.style.borderColor = 'var(--blue)';
+        this.nextElementSibling.style.background = 'rgba(18,85,161,.05)';
+    });
+    if (radio.checked) {
+        radio.nextElementSibling.style.borderColor = 'var(--blue)';
+        radio.nextElementSibling.style.background = 'rgba(18,85,161,.05)';
+    }
+});
 
 function toggleNuevoVehiculo(val) {
-    document.getElementById('nuevo-vehiculo').style.display = val ? 'none' : 'block';
+    const nv = document.getElementById('nuevo-vehiculo');
+    const sep = document.getElementById('separador');
+    nv.style.display = val ? 'none' : 'block';
+    if (sep) sep.style.display = val ? 'none' : 'flex';
 }
 
-// Carga dinámica de modelos por marca
 document.getElementById('marca_select')?.addEventListener('change', function () {
     const marcaId = this.value;
     const modeloSel = document.getElementById('modelo_select');
-    if (!marcaId) { modeloSel.innerHTML = '<option>Primero seleccioná la marca</option>'; return; }
+    if (!marcaId) { modeloSel.innerHTML = '<option>Primero elegí la marca</option>'; return; }
     modeloSel.innerHTML = '<option>Cargando...</option>';
     fetch(`/api/marcas/${marcaId}/modelos`)
         .then(r => r.json())

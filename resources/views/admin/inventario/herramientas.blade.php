@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Herramientas')
-@section('topbar-title', '<span>Inventario</span> — Herramientas')
+@section('topbar-title', 'Inventario — Herramientas')
 
 @section('content')
 <div class="page-header">
@@ -77,12 +77,12 @@
                         <div style="font-size:.78rem; color:var(--muted)">{{ Str::limit($h->descripcion, 50) }}</div>
                         @endif
                     </td>
-                    <td><span style="font-size:.82rem; color:var(--muted)">{{ ucfirst($h->tipo) }}</span></td>
+                    <td><span style="font-size:.82rem; color:var(--muted)">{{ ucfirst($h->tipo) }}</td>
                     <td>
                         <span class="ta-badge" style="background:{{ $colorEstado }}1a; color:{{ $colorEstado }}; gap:6px">
-                            <span style="width:6px;height:6px;border-radius:50%;background:{{ $colorEstado }};display:inline-block;flex-shrink:0"></span>
+                            <span style="width:6px;height:6px;border-radius:50%;background:{{ $colorEstado }};display:inline-block;flex-shrink:0">
                             {{ ucfirst(str_replace('_',' ',$h->estado)) }}
-                        </span>
+                        
                     </td>
                     <td style="font-size:.86rem; color:var(--muted)">{{ $h->ubicacion ?? '—' }}</td>
                     <td style="font-size:.84rem; color:var(--muted)">
@@ -134,11 +134,11 @@
             @csrf
             <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px">
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Nombre <span class="req">*</span></label>
+                    <label class="ta-label">Nombre <span class="req">*</label>
                     <input type="text" name="nombre" class="ta-input" required placeholder="Ej: Llave torquímetro">
                 </div>
                 <div>
-                    <label class="ta-label">Tipo <span class="req">*</span></label>
+                    <label class="ta-label">Tipo <span class="req">*</label>
                     <select name="tipo" class="ta-input ta-select" required>
                         <option value="manual">Manual</option>
                         <option value="electrica">Eléctrica</option>
@@ -148,7 +148,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="ta-label">Estado <span class="req">*</span></label>
+                    <label class="ta-label">Estado <span class="req">*</label>
                     <select name="estado" class="ta-input ta-select" required>
                         <option value="disponible">Disponible</option>
                         <option value="en_uso">En uso</option>

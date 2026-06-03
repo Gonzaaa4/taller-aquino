@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Reporte de Stock')
-@section('topbar-title', 'Reporte de <span>Stock</span>')
+@section('topbar-title', 'Reporte de Stock')
 
 @section('content')
 <div class="page-header">
@@ -85,13 +85,13 @@
                         <span style="font-family:'Oswald',sans-serif; font-size:1.1rem; font-weight:700;
                             color:{{ $est === 'sin_stock' ? 'var(--error)' : ($est === 'critico' ? 'var(--warn)' : 'var(--ok)') }}">
                             {{ $rep->cantidad_stock }}
-                        </span>
+                        
                     </td>
                     <td style="text-align:center; color:var(--muted)">{{ $rep->stock_minimo }}</td>
                     <td>
-                        @if($est === 'sin_stock') <span class="stock-sin">Sin stock</span>
-                        @elseif($est === 'critico') <span class="stock-critico">Crítico</span>
-                        @else <span class="stock-ok">OK</span>
+                        @if($est === 'sin_stock') <span class="stock-sin">Sin stock
+                        @elseif($est === 'critico') <span class="stock-critico">Crítico
+                        @else <span class="stock-ok">OK
                         @endif
                     </td>
                     <td style="font-size:.83rem; color:var(--muted)">{{ $rep->proveedor?->nombre ?? '—' }}</td>

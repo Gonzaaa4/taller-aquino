@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Reporte de Trabajos')
-@section('topbar-title', 'Reporte de <span>Trabajos Realizados</span>')
+@section('topbar-title', 'Reporte de Trabajos Realizados')
 
 @section('content')
 <div class="page-header">
@@ -74,7 +74,7 @@
     <div class="section-label-line"></div>
     <span style="font-size:.84rem; color:var(--muted); white-space:nowrap">
         ${{ number_format($grupo->sum('costo_total'), 0, ',', '.') }}
-    </span>
+    
 </div>
 
 <div class="ta-card" style="margin-bottom:16px">
@@ -134,7 +134,7 @@
 <div style="text-align:right; padding:16px 20px; background:white; border-radius:12px; border:1px solid var(--border);">
     <span style="font-family:'Oswald',sans-serif; font-size:1.2rem; color:var(--navy)">
         TOTAL GENERAL: ${{ number_format($totalIngresos, 2, ',', '.') }}
-    </span>
+    
 </div>
 @endif
 @endsection

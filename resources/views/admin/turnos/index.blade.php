@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Turnos')
-@section('topbar-title', 'Gestión de <span>Turnos</span>')
+@section('topbar-title', 'Gestión de Turnos')
 
 @section('content')
 <div class="page-header">
@@ -71,7 +71,7 @@
                     <td>
                         <span class="nro-seguimiento" style="font-size:.95rem">
                             {{ $turno->numero_seguimiento }}
-                        </span>
+                        
                     </td>
                     <td>
                         <div style="font-weight:600; font-size:.88rem; color:var(--navy)">
@@ -98,11 +98,11 @@
                         @if($turno->mecanico)
                             <div style="font-size:.84rem; color:var(--navy)">{{ $turno->mecanico->name }}</div>
                         @else
-                            <span style="font-size:.78rem; color:var(--muted); font-style:italic">Sin asignar</span>
+                            <span style="font-size:.78rem; color:var(--muted); font-style:italic">Sin asignar
                         @endif
                     </td>
                     <td>
-                        <span class="ta-badge badge-{{ $turno->estado }}">{{ $turno->etiquetaEstado() }}</span>
+                        <span class="ta-badge badge-{{ $turno->estado }}">{{ $turno->etiquetaEstado() }}
                     </td>
                     <td>
                         <div style="display:flex; gap:6px">

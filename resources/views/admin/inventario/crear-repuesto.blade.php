@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', isset($repuesto) && $repuesto->id ? 'Editar Repuesto' : 'Nuevo Repuesto')
-@section('topbar-title', isset($repuesto) && $repuesto->id ? 'Editar <span>Repuesto</span>' : 'Nuevo <span>Repuesto</span>')
+@section('topbar-title', isset($repuesto) && $repuesto->id ? 'Editar Repuesto' : 'Nuevo Repuesto')
 
 @section('content')
 <div class="page-header">
@@ -32,7 +32,7 @@
                     @error('codigo')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="ta-label">Categoría <span class="req">*</span></label>
+                    <label class="ta-label">Categoría <span class="req">*</label>
                     <select name="categoria" class="ta-input ta-select" required>
                         @foreach(['motor','transmision','frenos','suspension','electrico','lubricantes','filtros','otros'] as $cat)
                             <option value="{{ $cat }}" {{ old('categoria', $repuesto->categoria ?? '') === $cat ? 'selected' : '' }}>
@@ -42,7 +42,7 @@
                     </select>
                 </div>
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Nombre <span class="req">*</span></label>
+                    <label class="ta-label">Nombre <span class="req">*</label>
                     <input type="text" name="nombre" class="ta-input {{ $errors->has('nombre') ? 'is-invalid' : '' }}"
                         value="{{ old('nombre', $repuesto->nombre ?? '') }}" required placeholder="Ej: Filtro de aceite universal">
                     @error('nombre')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
@@ -53,19 +53,19 @@
                         placeholder="Detalles adicionales sobre el repuesto...">{{ old('descripcion', $repuesto->descripcion ?? '') }}</textarea>
                 </div>
                 <div>
-                    <label class="ta-label">Stock actual <span class="req">*</span></label>
+                    <label class="ta-label">Stock actual <span class="req">*</label>
                     <input type="number" name="cantidad_stock" class="ta-input {{ $errors->has('cantidad_stock') ? 'is-invalid' : '' }}"
                         value="{{ old('cantidad_stock', $repuesto->cantidad_stock ?? 0) }}" min="0" required>
                     @error('cantidad_stock')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="ta-label">Stock mínimo <span class="req">*</span></label>
+                    <label class="ta-label">Stock mínimo <span class="req">*</label>
                     <input type="number" name="stock_minimo" class="ta-input {{ $errors->has('stock_minimo') ? 'is-invalid' : '' }}"
                         value="{{ old('stock_minimo', $repuesto->stock_minimo ?? 1) }}" min="0" required>
                     @error('stock_minimo')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="ta-label">Costo unitario ($) <span class="req">*</span></label>
+                    <label class="ta-label">Costo unitario ($) <span class="req">*</label>
                     <input type="number" name="costo" class="ta-input {{ $errors->has('costo') ? 'is-invalid' : '' }}"
                         value="{{ old('costo', $repuesto->costo ?? 0) }}" min="0" step="0.01" required>
                     @error('costo')<div class="ta-invalid-msg">{{ $message }}</div>@enderror

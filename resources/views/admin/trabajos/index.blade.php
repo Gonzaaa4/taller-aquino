@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Órdenes de Trabajo')
-@section('topbar-title', '<span>Órdenes</span> de Trabajo')
+@section('topbar-title', 'Órdenes de Trabajo')
 
 @section('content')
 <div class="page-header">
@@ -77,7 +77,7 @@
                     <td>
                         <span class="ta-badge badge-{{ str_replace('_','-',$ingreso->estado) }}">
                             {{ $ingreso->etiquetaEstado() }}
-                        </span>
+                        
                     </td>
                     <td>
                         <a href="{{ route('admin.trabajos.show', $ingreso) }}" class="btn-secondary-ta" style="padding:7px 14px; font-size:.82rem">
@@ -115,7 +115,7 @@
             @csrf
             <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px">
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Turno asociado <span style="color:var(--muted); font-weight:400">(opcional)</span></label>
+                    <label class="ta-label">Turno asociado <span style="color:var(--muted); font-weight:400">(opcional)</label>
                     <select name="turno_id" id="turnoSelect" class="ta-input ta-select" onchange="cargarDatosTurno(this.value)">
                         <option value="">Sin turno / ingreso directo</option>
                         @foreach(\App\Models\Turno::whereIn('estado',['pendiente','confirmado'])->with(['cliente','vehiculo'])->orderBy('fecha_hora_turno')->get() as $t)
@@ -126,7 +126,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="ta-label">Cliente <span class="req">*</span></label>
+                    <label class="ta-label">Cliente <span class="req">*</label>
                     <select name="cliente_id" id="clienteSelect" class="ta-input ta-select" required>
                         <option value="">Seleccioná...</option>
                         @foreach(\App\Models\User::where('rol','cliente')->orderBy('name')->get() as $c)
@@ -135,7 +135,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="ta-label">Vehículo <span class="req">*</span></label>
+                    <label class="ta-label">Vehículo <span class="req">*</label>
                     <select name="vehiculo_id" id="vehiculoSelect" class="ta-input ta-select" required>
                         <option value="">Seleccioná...</option>
                         @foreach(\App\Models\Vehiculo::with(['marca','modelo'])->get() as $v)
@@ -144,7 +144,7 @@
                     </select>
                 </div>
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Kilometraje actual <span class="req">*</span></label>
+                    <label class="ta-label">Kilometraje actual <span class="req">*</label>
                     <input type="number" name="kilometraje_ingreso" class="ta-input" min="0" required placeholder="Ej: 85000">
                 </div>
                 <div style="grid-column:span 2">

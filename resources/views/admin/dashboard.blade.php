@@ -1,4 +1,4 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Dashboard')
 @section('topbar-title', 'Dashboard — Resumen Operativo')
 
@@ -76,7 +76,7 @@
                 </div>
                 <div style="font-size:.78rem; color:var(--muted)">
                     {{ $turno->vehiculo->marca->nombre }} {{ $turno->vehiculo->modelo->nombre }}
-                    · <span style="font-family:'Oswald',sans-serif; letter-spacing:.05em">{{ $turno->vehiculo->patente }}</span>
+                    · <span style="font-family:'Oswald',sans-serif; letter-spacing:.05em">{{ $turno->vehiculo->patente }}
                 </div>
             </div>
             @if($turno->mecanico)
@@ -84,7 +84,7 @@
                 <i class="bi bi-person-gear"></i> {{ $turno->mecanico->name }}
             </div>
             @endif
-            <span class="ta-badge badge-{{ $turno->estado }}">{{ $turno->etiquetaEstado() }}</span>
+            <span class="ta-badge badge-{{ $turno->estado }}">{{ $turno->etiquetaEstado() }}
         </div>
         @empty
         <div style="text-align:center; padding:48px 20px; color:var(--muted)">

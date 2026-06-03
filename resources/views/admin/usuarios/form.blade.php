@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', $usuario->id ? 'Editar Usuario' : 'Nuevo Usuario')
-@section('topbar-title', $usuario->id ? '<span>Editar</span> Usuario' : '<span>Nuevo</span> Usuario')
+@section('topbar-title', $usuario->id ? 'Editar Usuario' : 'Nuevo Usuario')
 
 @section('content')
 <div class="page-header">
@@ -26,13 +26,13 @@
 
             <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:16px">
                 <div>
-                    <label class="ta-label">Nombre <span class="req">*</span></label>
+                    <label class="ta-label">Nombre <span class="req">*</label>
                     <input type="text" name="name" class="ta-input {{ $errors->has('name') ? 'is-invalid' : '' }}"
                         value="{{ old('name', $usuario->name) }}" required>
                     @error('name')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="ta-label">Apellido <span class="req">*</span></label>
+                    <label class="ta-label">Apellido <span class="req">*</label>
                     <input type="text" name="apellido" class="ta-input {{ $errors->has('apellido') ? 'is-invalid' : '' }}"
                         value="{{ old('apellido', $usuario->apellido) }}" required>
                     @error('apellido')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
@@ -49,13 +49,13 @@
                         value="{{ old('telefono', $usuario->telefono) }}" placeholder="3751-000000">
                 </div>
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Correo electrónico <span class="req">*</span></label>
+                    <label class="ta-label">Correo electrónico <span class="req">*</label>
                     <input type="email" name="email" class="ta-input {{ $errors->has('email') ? 'is-invalid' : '' }}"
                         value="{{ old('email', $usuario->email) }}" required>
                     @error('email')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="ta-label">Rol <span class="req">*</span></label>
+                    <label class="ta-label">Rol <span class="req">*</label>
                     <select name="rol" class="ta-input ta-select" required>
                         @foreach(['admin','administrativo','mecanico','cliente'] as $r)
                             <option value="{{ $r }}" {{ old('rol', $usuario->rol) === $r ? 'selected' : '' }}>

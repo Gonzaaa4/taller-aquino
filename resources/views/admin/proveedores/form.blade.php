@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', $proveedor->id ? 'Editar Proveedor' : 'Nuevo Proveedor')
-@section('topbar-title', $proveedor->id ? '<span>Editar</span> Proveedor' : '<span>Nuevo</span> Proveedor')
+@section('topbar-title', $proveedor->id ? 'Editar Proveedor' : 'Nuevo Proveedor')
 
 @section('content')
 <div class="page-header">
@@ -26,7 +26,7 @@
 
             <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:16px">
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Nombre <span class="req">*</span></label>
+                    <label class="ta-label">Nombre <span class="req">*</label>
                     <input type="text" name="nombre" class="ta-input {{ $errors->has('nombre') ? 'is-invalid' : '' }}"
                         value="{{ old('nombre', $proveedor->nombre) }}" required placeholder="Razón social o nombre">
                     @error('nombre')<div class="ta-invalid-msg">{{ $message }}</div>@enderror

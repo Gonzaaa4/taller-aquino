@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Reporte de Turnos')
-@section('topbar-title', 'Reporte de <span>Turnos</span>')
+@section('topbar-title', 'Reporte de Turnos')
 
 @section('content')
 <div class="page-header">
@@ -79,7 +79,7 @@
             <tbody>
                 @foreach($turnos as $t)
                 <tr>
-                    <td><span class="nro-seguimiento">{{ $t->numero_seguimiento }}</span></td>
+                    <td><span class="nro-seguimiento">{{ $t->numero_seguimiento }}</td>
                     <td>
                         <div style="font-size:.86rem; color:var(--navy)">{{ $t->fecha_hora_turno->format('d/m/Y') }}</div>
                         <div style="font-size:.74rem; color:var(--muted)">{{ $t->fecha_hora_turno->format('H:i') }} hs</div>
@@ -94,7 +94,7 @@
                     </td>
                     <td style="font-size:.83rem; color:var(--muted)">{{ ucfirst(str_replace('_',' ',$t->tipo_servicio)) }}</td>
                     <td style="font-size:.83rem">{{ $t->mecanico?->name ?? '—' }}</td>
-                    <td><span class="ta-badge badge-{{ $t->estado }}">{{ $t->etiquetaEstado() }}</span></td>
+                    <td><span class="ta-badge badge-{{ $t->estado }}">{{ $t->etiquetaEstado() }}</td>
                 </tr>
                 @endforeach
             </tbody>

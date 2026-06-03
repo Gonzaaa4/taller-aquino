@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Inventario – Repuestos')
-@section('topbar-title', 'Inventario de <span>Repuestos</span>')
+@section('topbar-title', 'Inventario de Repuestos')
 
 @section('content')
 <div class="page-header">
@@ -18,7 +18,7 @@
 
 @if($alertas > 0)
 <div class="ta-alert warning" style="margin-bottom:20px">
-    <span class="ta-alert-icon"><i class="bi bi-exclamation-triangle-fill"></i></span>
+    <span class="ta-alert-icon"><i class="bi bi-exclamation-triangle-fill"></i>
     <div>
         <strong>{{ $alertas }} repuesto{{ $alertas > 1 ? 's' : '' }} con stock bajo o agotado.</strong>
         Revisá el inventario para evitar demoras en los trabajos.
@@ -91,22 +91,22 @@
                     <td>
                         <span style="background:rgba(46,141,255,.1); color:var(--blue); padding:3px 10px; border-radius:20px; font-size:.74rem; font-weight:600">
                             {{ ucfirst($rep->categoria) }}
-                        </span>
+                        
                     </td>
                     <td style="text-align:center">
                         <span style="font-family:'Oswald',sans-serif; font-size:1.1rem; font-weight:600;
                             color: {{ $estado === 'sin_stock' ? 'var(--error)' : ($estado === 'critico' ? 'var(--warn)' : 'var(--ok)') }}">
                             {{ $rep->cantidad_stock }}
-                        </span>
+                        
                     </td>
                     <td style="text-align:center; color:var(--muted); font-size:.88rem">{{ $rep->stock_minimo }}</td>
                     <td>
                         @if($estado === 'sin_stock')
-                            <span class="stock-sin">Sin stock</span>
+                            <span class="stock-sin">Sin stock
                         @elseif($estado === 'critico')
-                            <span class="stock-critico">Crítico</span>
+                            <span class="stock-critico">Crítico
                         @else
-                            <span class="stock-ok">OK</span>
+                            <span class="stock-ok">OK
                         @endif
                     </td>
                     <td style="font-size:.84rem; color:var(--muted)">{{ $rep->proveedor?->nombre ?? '—' }}</td>
@@ -164,17 +164,17 @@
                         <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1; padding:10px 14px; border:1.5px solid var(--border); border-radius:9px; transition:all .15s" id="labelIngreso">
                             <input type="radio" name="tipo" value="ingreso" checked onchange="updateTipoStyle()"
                                 style="accent-color:var(--ok)">
-                            <span style="font-size:.88rem; color:var(--ok); font-weight:600">Ingreso (+)</span>
+                            <span style="font-size:.88rem; color:var(--ok); font-weight:600">Ingreso (+)
                         </label>
                         <label style="display:flex; align-items:center; gap:8px; cursor:pointer; flex:1; padding:10px 14px; border:1.5px solid var(--border); border-radius:9px; transition:all .15s" id="labelEgreso">
                             <input type="radio" name="tipo" value="egreso" onchange="updateTipoStyle()"
                                 style="accent-color:var(--error)">
-                            <span style="font-size:.88rem; color:var(--error); font-weight:600">Egreso (−)</span>
+                            <span style="font-size:.88rem; color:var(--error); font-weight:600">Egreso (−)
                         </label>
                     </div>
                 </div>
                 <div>
-                    <label class="ta-label">Cantidad <span class="req">*</span></label>
+                    <label class="ta-label">Cantidad <span class="req">*</label>
                     <input type="number" name="cantidad" class="ta-input" min="1" required placeholder="Ej: 5">
                 </div>
                 <div style="margin-top:10px; font-size:.8rem; color:var(--muted)">

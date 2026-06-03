@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Generar Reporte')
-@section('topbar-title', 'Generar <span>Reporte</span>')
+@section('topbar-title', 'Generar Reporte')
 
 @section('content')
 <div class="page-header">
@@ -28,12 +28,12 @@
         <form method="GET" action="{{ route('admin.reportes.trabajos') }}" style="padding:16px 20px 20px">
             <div style="display:grid; gap:12px">
                 <div>
-                    <label class="ta-label">Desde <span class="req">*</span></label>
+                    <label class="ta-label">Desde <span class="req">*</label>
                     <input type="date" name="fecha_inicio" class="ta-input"
                         value="{{ now()->startOfMonth()->format('Y-m-d') }}" required>
                 </div>
                 <div>
-                    <label class="ta-label">Hasta <span class="req">*</span></label>
+                    <label class="ta-label">Hasta <span class="req">*</label>
                     <input type="date" name="fecha_fin" class="ta-input"
                         value="{{ now()->format('Y-m-d') }}" required>
                 </div>
@@ -115,12 +115,12 @@
         <form method="GET" action="{{ route('admin.reportes.turnos') }}" style="padding:16px 20px 20px">
             <div style="display:grid; gap:12px">
                 <div>
-                    <label class="ta-label">Desde <span class="req">*</span></label>
+                    <label class="ta-label">Desde <span class="req">*</label>
                     <input type="date" name="fecha_inicio" class="ta-input"
                         value="{{ now()->startOfMonth()->format('Y-m-d') }}" required>
                 </div>
                 <div>
-                    <label class="ta-label">Hasta <span class="req">*</span></label>
+                    <label class="ta-label">Hasta <span class="req">*</label>
                     <input type="date" name="fecha_fin" class="ta-input"
                         value="{{ now()->format('Y-m-d') }}" required>
                 </div>
@@ -169,7 +169,7 @@
                 @forelse($reportes as $rep)
                 <tr>
                     <td>
-                        <span style="font-weight:600; color:var(--navy)">{{ $rep->etiquetaTipo() }}</span>
+                        <span style="font-weight:600; color:var(--navy)">{{ $rep->etiquetaTipo() }}
                     </td>
                     <td style="font-size:.84rem; color:var(--muted)">
                         {{ $rep->fecha_inicio->format('d/m/Y') }} — {{ $rep->fecha_fin->format('d/m/Y') }}

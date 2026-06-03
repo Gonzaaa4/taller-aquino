@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Editar Repuesto')
-@section('topbar-title', 'Editar <span>Repuesto</span>')
+@section('topbar-title', 'Editar Repuesto')
 
 @section('content')
 <div class="page-header">
@@ -32,7 +32,7 @@
                     @error('codigo')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
                 </div>
                 <div>
-                    <label class="ta-label">Categoría <span class="req">*</span></label>
+                    <label class="ta-label">Categoría <span class="req">*</label>
                     <select name="categoria" class="ta-input ta-select" required>
                         @foreach(['motor','transmision','frenos','suspension','electrico','lubricantes','filtros','otros'] as $cat)
                             <option value="{{ $cat }}" {{ old('categoria', $repuesto->categoria) === $cat ? 'selected' : '' }}>
@@ -42,7 +42,7 @@
                     </select>
                 </div>
                 <div style="grid-column:span 2">
-                    <label class="ta-label">Nombre <span class="req">*</span></label>
+                    <label class="ta-label">Nombre <span class="req">*</label>
                     <input type="text" name="nombre" class="ta-input {{ $errors->has('nombre') ? 'is-invalid' : '' }}"
                         value="{{ old('nombre', $repuesto->nombre) }}" required>
                     @error('nombre')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
@@ -52,17 +52,17 @@
                     <textarea name="descripcion" class="ta-input ta-textarea">{{ old('descripcion', $repuesto->descripcion) }}</textarea>
                 </div>
                 <div>
-                    <label class="ta-label">Stock actual <span class="req">*</span></label>
+                    <label class="ta-label">Stock actual <span class="req">*</label>
                     <input type="number" name="cantidad_stock" class="ta-input"
                         value="{{ old('cantidad_stock', $repuesto->cantidad_stock) }}" min="0" required>
                 </div>
                 <div>
-                    <label class="ta-label">Stock mínimo <span class="req">*</span></label>
+                    <label class="ta-label">Stock mínimo <span class="req">*</label>
                     <input type="number" name="stock_minimo" class="ta-input"
                         value="{{ old('stock_minimo', $repuesto->stock_minimo) }}" min="0" required>
                 </div>
                 <div>
-                    <label class="ta-label">Costo unitario ($) <span class="req">*</span></label>
+                    <label class="ta-label">Costo unitario ($) <span class="req">*</label>
                     <input type="number" name="costo" class="ta-input"
                         value="{{ old('costo', $repuesto->costo) }}" min="0" step="0.01" required>
                 </div>

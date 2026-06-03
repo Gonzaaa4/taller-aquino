@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Proveedores')
-@section('topbar-title', '<span>Gestión</span> de Proveedores')
+@section('topbar-title', 'Gestión de Proveedores')
 
 @section('content')
 <div class="page-header">
@@ -75,19 +75,19 @@
                     <td>
                         <span style="background:rgba(46,141,255,.1); color:var(--blue); padding:3px 10px; border-radius:20px; font-size:.76rem; font-weight:600">
                             {{ ucfirst($p->categoria ?? 'General') }}
-                        </span>
+                        
                     </td>
                     <td>
                         <span style="font-family:'Oswald',sans-serif; font-size:1rem; color:var(--navy)">
                             {{ $p->repuestos_count }}
-                        </span>
-                        <span style="font-size:.76rem; color:var(--muted)"> items</span>
+                        
+                        <span style="font-size:.76rem; color:var(--muted)"> items
                     </td>
                     <td>
                         @if($p->activo)
-                            <span class="ta-badge badge-finalizado">Activo</span>
+                            <span class="ta-badge badge-finalizado">Activo
                         @else
-                            <span class="ta-badge badge-cancelado">Inactivo</span>
+                            <span class="ta-badge badge-cancelado">Inactivo
                         @endif
                     </td>
                     <td>

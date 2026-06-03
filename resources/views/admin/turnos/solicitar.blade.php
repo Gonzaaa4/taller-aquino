@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Nuevo Turno Presencial')
-@section('topbar-title', 'Registrar <span>Turno Presencial</span>')
+@section('topbar-title', 'Registrar Turno Presencial')
 
 @section('content')
 <div class="page-header">
@@ -27,25 +27,25 @@
         </div>
         <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:16px">
             <div>
-                <label class="ta-label">Nombre <span class="req">*</span></label>
+                <label class="ta-label">Nombre <span class="req">*</label>
                 <input type="text" name="name" class="ta-input {{ $errors->has('name') ? 'is-invalid' : '' }}"
                     value="{{ old('name') }}" placeholder="Juan" required>
                 @error('name')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
             </div>
             <div>
-                <label class="ta-label">Apellido <span class="req">*</span></label>
+                <label class="ta-label">Apellido <span class="req">*</label>
                 <input type="text" name="apellido" class="ta-input {{ $errors->has('apellido') ? 'is-invalid' : '' }}"
                     value="{{ old('apellido') }}" placeholder="Pérez" required>
                 @error('apellido')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
             </div>
             <div>
-                <label class="ta-label">DNI <span class="req">*</span></label>
+                <label class="ta-label">DNI <span class="req">*</label>
                 <input type="text" name="dni" class="ta-input {{ $errors->has('dni') ? 'is-invalid' : '' }}"
                     value="{{ old('dni') }}" placeholder="35123456" required maxlength="20">
                 @error('dni')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
             </div>
             <div>
-                <label class="ta-label">Teléfono <span class="req">*</span></label>
+                <label class="ta-label">Teléfono <span class="req">*</label>
                 <input type="text" name="telefono" class="ta-input {{ $errors->has('telefono') ? 'is-invalid' : '' }}"
                     value="{{ old('telefono') }}" placeholder="3751-000000" required>
                 @error('telefono')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
@@ -65,7 +65,7 @@
         </div>
         <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:16px">
             <div>
-                <label class="ta-label">Marca <span class="req">*</span></label>
+                <label class="ta-label">Marca <span class="req">*</label>
                 <select name="marca_id" id="marca_select" class="ta-input ta-select" required>
                     <option value="">Seleccioná la marca...</option>
                     @foreach($marcas as $marca)
@@ -76,23 +76,23 @@
                 </select>
             </div>
             <div>
-                <label class="ta-label">Modelo <span class="req">*</span></label>
+                <label class="ta-label">Modelo <span class="req">*</label>
                 <select name="modelo_id" id="modelo_select" class="ta-input ta-select" required>
                     <option value="">Primero seleccioná la marca</option>
                 </select>
             </div>
             <div>
-                <label class="ta-label">Año <span class="req">*</span></label>
+                <label class="ta-label">Año <span class="req">*</label>
                 <input type="number" name="anio" class="ta-input" value="{{ old('anio') }}"
                     min="1990" max="{{ date('Y') + 1 }}" placeholder="{{ date('Y') }}" required>
             </div>
             <div>
-                <label class="ta-label">Patente <span class="req">*</span></label>
+                <label class="ta-label">Patente <span class="req">*</label>
                 <input type="text" name="patente" class="ta-input" value="{{ old('patente') }}"
                     placeholder="ABC123" required style="text-transform:uppercase">
             </div>
             <div>
-                <label class="ta-label">Kilometraje <span class="req">*</span></label>
+                <label class="ta-label">Kilometraje <span class="req">*</label>
                 <input type="number" name="kilometraje" class="ta-input" value="{{ old('kilometraje') }}"
                     min="0" placeholder="Ej: 85000" required>
             </div>
@@ -106,7 +106,7 @@
         </div>
         <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:16px">
             <div>
-                <label class="ta-label">Fecha y hora <span class="req">*</span></label>
+                <label class="ta-label">Fecha y hora <span class="req">*</label>
                 <input type="datetime-local" name="fecha_hora_turno"
                     class="ta-input {{ $errors->has('fecha_hora_turno') ? 'is-invalid' : '' }}"
                     value="{{ old('fecha_hora_turno') }}"
@@ -114,7 +114,7 @@
                 @error('fecha_hora_turno')<div class="ta-invalid-msg">{{ $message }}</div>@enderror
             </div>
             <div>
-                <label class="ta-label">Tipo de servicio <span class="req">*</span></label>
+                <label class="ta-label">Tipo de servicio <span class="req">*</label>
                 <select name="tipo_servicio" class="ta-input ta-select" required>
                     <option value="">Seleccioná...</option>
                     <option value="mantenimiento_preventivo" {{ old('tipo_servicio') === 'mantenimiento_preventivo' ? 'selected' : '' }}>Mantenimiento Preventivo</option>

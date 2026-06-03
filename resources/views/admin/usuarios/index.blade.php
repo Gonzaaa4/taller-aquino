@@ -1,6 +1,6 @@
-@extends('layouts.app')
+﻿@extends('layouts.app')
 @section('title', 'Usuarios')
-@section('topbar-title', '<span>Gestión</span> de Usuarios')
+@section('topbar-title', 'Gestión de Usuarios')
 
 @section('content')
 <div class="page-header">
@@ -86,13 +86,13 @@
                         <span style="padding:3px 11px; border-radius:20px; font-size:.74rem; font-weight:700;
                             {{ $rolColor[0] }}; {{ $rolColor[1] }}; background:{{ str_replace('bg:','',$rolColor[0]) }}">
                             {{ ucfirst($u->rol) }}
-                        </span>
+                        
                     </td>
                     <td>
                         @if($u->activo)
-                            <span class="ta-badge badge-finalizado">Activo</span>
+                            <span class="ta-badge badge-finalizado">Activo
                         @else
-                            <span class="ta-badge badge-cancelado">Suspendido</span>
+                            <span class="ta-badge badge-cancelado">Suspendido
                         @endif
                     </td>
                     <td>

@@ -1,110 +1,136 @@
-@extends('layouts.app')
-
+﻿@extends('layouts.app')
 @section('title', 'Mi Panel')
-
-@section('breadcrumb')
-    <li class="breadcrumb-item active">Mi Panel</li>
-@endsection
+@section('topbar-title', 'Mi Panel')
 
 @section('content')
-<div class="d-flex align-items-center justify-content-between mb-4">
-    <div>
-        <h4 class="fw-bold mb-0">¡Hola, {{ auth()->user()->name }}!</h4>
-        <p class="text-muted small mb-0">Bienvenido/a al panel de Taller Aquino</p>
+<div class="page-header">
+    <div class="page-header-top">
+        <div>
+            <div class="page-eyebrow">Portal del Cliente</div>
+            <h1 class="page-title">¡Hola, {{ auth()->user()->name }}!</h1>
+            <p class="page-subtitle">Bienvenido/a al sistema de Taller Aquino</p>
+        </div>
+        <a href="{{ route('cliente.turnos.solicitar') }}" class="btn-primary-ta">
+            <i class="bi bi-plus-circle"></i> Solicitar Turno
+        </a>
     </div>
-    <a href="{{ route('cliente.turnos.solicitar') }}" class="btn btn-taller">
-        <i class="bi bi-plus-circle me-1"></i> Solicitar Turno
-    </a>
 </div>
 
-{{-- Próximo turno --}}
+{{-- Próximo turno destacado --}}
 @if($proximoTurno)
-<div class="card border-start border-4 border-primary mb-4">
-    <div class="card-body">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <div class="text-muted small mb-1"><i class="bi bi-calendar-event me-1"></i>Próximo Turno</div>
-                <h5 class="fw-bold mb-1">
-                    {{ $proximoTurno->fecha_hora_turno->locale('es')->isoFormat('dddd D [de] MMMM, YYYY') }}
-                    a las {{ $proximoTurno->fecha_hora_turno->format('H:i') }} hs
-                </h5>
-                <p class="mb-0 text-muted">
-                    {{ $proximoTurno->vehiculo->marca->nombre }} {{ $proximoTurno->vehiculo->modelo->nombre }}
-                    – {{ $proximoTurno->vehiculo->patente }}
-                </p>
-            </div>
-            <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                <div class="nro-seguimiento mb-2">{{ $proximoTurno->numero_seguimiento }}</div>
-                <span class="badge badge-{{ $proximoTurno->estado }} rounded-pill px-3 py-2">
-                    {{ $proximoTurno->etiquetaEstado() }}
-                </span>
-            </div>
+<div style="background:linear-gradient(135deg, #1255a1 0%, #0b1c2e 100%); border-radius:14px; padding:24px 28px; margin-bottom:24px; display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap">
+    <div>
+        <div style="font-size:.72rem; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px">
+            <i class="bi bi-clock" style="margin-right:5px"></i>Próximo Turno
         </div>
+        <div style="font-family:'Oswald',sans-serif; font-size:1.5rem; color:white; margin-bottom:4px">
+            {{ $proximoTurno->fecha_hora_turno->locale('es')->isoFormat('dddd D [de] MMMM') }}
+            a las {{ $proximoTurno->fecha_hora_turno->format('H:i') }} hs
+        </div>
+        <div style="font-size:.9rem; color:rgba(255,255,255,.65)">
+            {{ $proximoTurno->vehiculo->marca->nombre }} {{ $proximoTurno->vehiculo->modelo->nombre }}
+            · {{ $proximoTurno->vehiculo->patente }}
+            · {{ ucfirst(str_replace('_',' ',$proximoTurno->tipo_servicio)) }}
+        </div>
+    </div>
+    <div style="text-align:right">
+        <div style="font-family:'Oswald',sans-serif; font-size:1.2rem; color:rgba(255,255,255,.6); letter-spacing:.08em; margin-bottom:8px">
+            {{ $proximoTurno->numero_seguimiento }}
+        </div>
+        <span class="ta-badge badge-{{ $proximoTurno->estado }}" style="font-size:.82rem">
+            {{ $proximoTurno->etiquetaEstado() }}
+        
     </div>
 </div>
 @endif
 
-<div class="row g-3">
+<div style="display:grid; grid-template-columns:1fr 320px; gap:20px; align-items:start">
+
     {{-- Turnos recientes --}}
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-clock-history me-2"></i>Mis Turnos</span>
-                <a href="{{ route('cliente.turnos.index') }}" class="btn btn-sm btn-outline-secondary">Ver todos</a>
-            </div>
-            <div class="card-body p-0">
-                @forelse($turnosRecientes as $turno)
-                <div class="d-flex align-items-center px-3 py-2 border-bottom">
-                    <div class="me-3">
-                        <div class="fw-semibold small">{{ $turno->fecha_hora_turno->format('d/m/Y') }}</div>
-                        <div class="text-muted" style="font-size:.72rem">{{ $turno->fecha_hora_turno->format('H:i') }} hs</div>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="small">{{ $turno->vehiculo->marca->nombre }} {{ $turno->vehiculo->modelo->nombre }}</div>
-                        <div class="font-mono text-muted" style="font-size:.72rem">{{ $turno->numero_seguimiento }}</div>
-                    </div>
-                    <span class="badge badge-{{ $turno->estado }} rounded-pill">{{ $turno->etiquetaEstado() }}</span>
-                </div>
-                @empty
-                <div class="text-center text-muted py-4">
-                    <i class="bi bi-calendar-x fs-2 d-block mb-2"></i>
-                    No tenés turnos registrados.
-                    <br>
-                    <a href="{{ route('cliente.turnos.solicitar') }}" class="btn btn-taller btn-sm mt-2">Solicitar primer turno</a>
-                </div>
-                @endforelse
-            </div>
+    <div class="ta-card">
+        <div class="ta-card-header">
+            <div class="ta-card-title"><i class="bi bi-clock-history"></i> Mis Turnos Recientes</div>
+            <a href="{{ route('cliente.turnos.index') }}" class="btn-secondary-ta" style="font-size:.8rem; padding:6px 14px">
+                Ver todos →
+            </a>
         </div>
+
+        @forelse($turnosRecientes as $turno)
+        <div style="display:flex; align-items:center; gap:16px; padding:14px 20px; border-bottom:1px solid rgba(192,211,232,.4)">
+            <div style="text-align:center; min-width:52px; padding:8px; background:var(--card); border-radius:8px; border:1px solid var(--border)">
+                <div style="font-family:'Oswald',sans-serif; font-size:1.1rem; color:var(--navy); line-height:1">
+                    {{ $turno->fecha_hora_turno->format('d') }}
+                </div>
+                <div style="font-size:.68rem; color:var(--muted); text-transform:uppercase">
+                    {{ $turno->fecha_hora_turno->locale('es')->isoFormat('MMM') }}
+                </div>
+            </div>
+            <div style="flex:1; min-width:0">
+                <div style="font-weight:600; font-size:.9rem; color:var(--navy)">
+                    {{ $turno->vehiculo->marca->nombre }} {{ $turno->vehiculo->modelo->nombre }}
+                </div>
+                <div style="font-size:.78rem; color:var(--muted)">
+                    {{ ucfirst(str_replace('_',' ',$turno->tipo_servicio)) }}
+                    · {{ $turno->fecha_hora_turno->format('H:i') }} hs
+                </div>
+                <div style="font-family:'Oswald',sans-serif; font-size:.72rem; color:var(--accent); letter-spacing:.06em">
+                    {{ $turno->numero_seguimiento }}
+                </div>
+            </div>
+            <span class="ta-badge badge-{{ $turno->estado }}">{{ $turno->etiquetaEstado() }}
+        </div>
+        @empty
+        <div style="text-align:center; padding:48px 20px; color:var(--muted)">
+            <i class="bi bi-calendar-x" style="font-size:2.5rem; display:block; margin-bottom:14px; opacity:.3"></i>
+            <div style="font-weight:600; margin-bottom:8px">No tenés turnos registrados</div>
+            <a href="{{ route('cliente.turnos.solicitar') }}" class="btn-primary-ta" style="display:inline-flex">
+                <i class="bi bi-plus-circle"></i> Solicitar primer turno
+            </a>
+        </div>
+        @endforelse
     </div>
 
-    {{-- Mis vehículos + consulta rápida --}}
-    <div class="col-lg-4">
-        <div class="card mb-3">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span><i class="bi bi-car-front me-2"></i>Mis Vehículos</span>
-                <a href="{{ route('cliente.vehiculos.crear') }}" class="btn btn-sm btn-outline-secondary">
-                    <i class="bi bi-plus"></i>
+    {{-- Sidebar cliente --}}
+    <div>
+        {{-- Mis vehículos --}}
+        <div class="ta-card" style="margin-bottom:16px">
+            <div class="ta-card-header">
+                <div class="ta-card-title"><i class="bi bi-car-front"></i> Mis Vehículos</div>
+                <a href="{{ route('cliente.vehiculos.crear') }}" style="color:var(--accent); text-decoration:none; font-size:.8rem">
+                    + Agregar
                 </a>
             </div>
-            <div class="card-body p-0">
-                @forelse($vehiculos as $v)
-                <div class="px-3 py-2 border-bottom">
-                    <div class="fw-semibold small">{{ $v->marca->nombre }} {{ $v->modelo->nombre }} {{ $v->anio }}</div>
-                    <div class="text-muted" style="font-size:.72rem">Patente: {{ $v->patente }}</div>
+            @forelse($vehiculos as $v)
+            <div style="padding:12px 18px; border-bottom:1px solid rgba(192,211,232,.4)">
+                <div style="font-weight:600; font-size:.88rem; color:var(--navy)">
+                    {{ $v->marca->nombre }} {{ $v->modelo->nombre }} {{ $v->anio }}
                 </div>
-                @empty
-                <div class="text-center text-muted py-3 small">No hay vehículos registrados.</div>
-                @endforelse
+                <div style="display:flex; justify-content:space-between; align-items:center">
+                    <div style="font-family:'Oswald',sans-serif; font-size:.8rem; color:var(--accent); letter-spacing:.06em">
+                        {{ $v->patente }}
+                    </div>
+                    <div style="font-size:.72rem; color:var(--muted)">{{ number_format($v->kilometraje) }} km</div>
+                </div>
             </div>
+            @empty
+            <div style="text-align:center; padding:24px; color:var(--muted); font-size:.86rem">
+                No hay vehículos registrados
+            </div>
+            @endforelse
         </div>
 
-        <div class="card">
-            <div class="card-body text-center py-4">
-                <i class="bi bi-search fs-2 text-primary d-block mb-2"></i>
-                <h6 class="fw-bold">Consultar Estado</h6>
-                <p class="text-muted small">Seguí el progreso de tu reparación con el número de seguimiento.</p>
-                <a href="{{ route('cliente.consultar-estado') }}" class="btn btn-taller btn-sm w-100">
-                    Consultar ahora
+        {{-- Consultar estado --}}
+        <div class="ta-card">
+            <div style="padding:24px; text-align:center">
+                <i class="bi bi-search" style="font-size:2rem; color:var(--blue); display:block; margin-bottom:10px"></i>
+                <div style="font-family:'Oswald',sans-serif; font-size:1rem; color:var(--navy); letter-spacing:.04em; margin-bottom:6px">
+                    CONSULTAR ESTADO
+                </div>
+                <p style="font-size:.84rem; color:var(--muted); margin-bottom:16px; line-height:1.5">
+                    Seguí el progreso de tu reparación con el número de seguimiento.
+                </p>
+                <a href="{{ route('cliente.consultar-estado') }}" class="btn-primary-ta" style="width:100%; justify-content:center">
+                    <i class="bi bi-search"></i> Consultar ahora
                 </a>
             </div>
         </div>

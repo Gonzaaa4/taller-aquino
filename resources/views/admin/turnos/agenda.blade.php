@@ -1,7 +1,7 @@
-{{-- AGENDA --}}
+﻿{{-- AGENDA --}}
 @extends('layouts.app')
 @section('title', 'Agenda Semanal')
-@section('topbar-title', '<span>Agenda</span> Semanal')
+@section('topbar-title', 'Agenda Semanal')
 @section('content')
 <div class="page-header">
     <div class="page-header-top">
@@ -46,7 +46,7 @@
             @if($turnosDia->count() > 0)
             <span style="background:{{ $esHoy ? 'rgba(255,255,255,.25)' : 'var(--accent)' }}; color:white; border-radius:20px; padding:2px 8px; font-size:.7rem; font-weight:700">
                 {{ $turnosDia->count() }}
-            </span>
+            
             @endif
         </div>
         <div>
@@ -55,8 +55,8 @@
                style="display:block; padding:10px 14px; border-bottom:1px solid rgba(192,211,232,.4); text-decoration:none; transition:background .15s"
                onmouseover="this.style.background='var(--card)'" onmouseout="this.style.background=''">
                 <div style="display:flex; justify-content:space-between; align-items:center; gap:4px; margin-bottom:3px">
-                    <span style="font-family:'Oswald',sans-serif; font-size:.85rem; color:var(--navy)">{{ $turno->fecha_hora_turno->format('H:i') }}</span>
-                    <span class="ta-badge badge-{{ $turno->estado }}" style="font-size:.6rem; padding:2px 7px">{{ $turno->etiquetaEstado() }}</span>
+                    <span style="font-family:'Oswald',sans-serif; font-size:.85rem; color:var(--navy)">{{ $turno->fecha_hora_turno->format('H:i') }}
+                    <span class="ta-badge badge-{{ $turno->estado }}" style="font-size:.6rem; padding:2px 7px">{{ $turno->etiquetaEstado() }}
                 </div>
                 <div style="font-size:.78rem; font-weight:600; color:var(--text); overflow:hidden; white-space:nowrap; text-overflow:ellipsis">
                     {{ $turno->cliente->nombreCompleto() }}
