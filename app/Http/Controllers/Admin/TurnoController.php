@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Turno;
+use App\Models\User;
+use App\Models\Vehiculo;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+
+class TurnoController extends Controller
+{
+    public function index(Request $request)
+    {
+        $turnos = Turno::with(['cliente', 'vehiculo.marca', 'vehiculo.modelo', 'mecanico'])
+            ->when($request->estado, fn($q) => $q->where('estado', $request->estado))
+            ->when($request->fecha, fn($q) => $q->whereDate('fecha_hora_turno', $request->fecha))
+            ->orderBy('fecha_hora_turno', 'asc')
+            ->paginate(15);
+
+        $mecanicos = User::where('rol', 'mecanico')->where('activo', true)->get();
+
+        return view('admin.turnos.index', compact('turnos', 'mecanicos'));
+    }
+
+    public function show(Turno $turno)
+    {
+        $turno->load(['cliente', 'vehiculo.marca', 'vehiculo.modelo', 'mecanico', 'ingreso.trabajos.mecanico']);
+        return view('admin.turnos.show', compact('turno'));
+    }
+
+    public function confirmar(Turno $turno)
+    {
+        if (! $turno->estaPendiente()) {
+            return back()->with('error', 'Este turno no puede ser confirmado.');
+        }
+
+        $turno->update(['estado' => 'confirmado']);
+
+        return back()->with('success', "Turno #{$turno->numero_seguimiento} confirmado.");
+    }
+
+    public function asignarMecanico(Request $request, Turno $turno)
+    {
+        $request->validate(['mecanico_id' => 'required|exists:users,id']);
+
+        $mecanico = User::findOrFail($request->mecanico_id);
+        if (! $mecanico->esMecanico()) {
+            return back()->with('error', 'El usuario seleccionado no es mecánico.');
+        }
+
+        $turno->update(['mecanico_id' => $request->mecanico_id]);
+
+        return back()->with('success', "Mecánico {$mecanico->nombreCompleto()} asignado al turno.");
+    }
+
+    public function cancelar(Request $request, Turno $turno)
+    {
+        if (! $turno->puedeSerCancelado()) {
+            return back()->with('error', 'Este turno no puede ser cancelado.');
+        }
+
+        $turno->update([
+            'estado'            => 'cancelado',
+            'fecha_cancelacion' => now(),
+            'motivo_cancelacion'=> $request->motivo ?? 'Cancelado por administración',
+        ]);
+
+        return back()->with('success', 'Turno cancelado correctamente.');
+    }
+
+    // Agenda semanal del taller
+    public function agenda(Request $request)
+    {
+        $semana = $request->semana ? Carbon::parse($request->semana)->startOfWeek() : now()->startOfWeek();
+
+        $turnos = Turno::with(['cliente', 'vehiculo.marca', 'mecanico'])
+            ->whereBetween('fecha_hora_turno', [$semana, $semana->copy()->endOfWeek()])
+            ->whereNotIn('estado', ['cancelado'])
+            ->orderBy('fecha_hora_turno')
+            ->get()
+            ->groupBy(fn($t) => $t->fecha_hora_turno->format('Y-m-d'));
+
+        return view('admin.turnos.agenda', compact('turnos', 'semana'));
+    }
+
+    public function solicitar()
+{
+    $marcas    = \App\Models\Marca::orderBy('nombre')->get();
+    $mecanicos = \App\Models\User::where('rol', 'mecanico')->where('activo', true)->get();
+    return view('admin.turnos.solicitar', compact('marcas', 'mecanicos'));
+}
+
+public function guardar(Request $request)
+{
+    $request->validate([
+        'name'             => 'required|string|max:100',
+        'apellido'         => 'required|string|max:100',
+        'dni'              => 'required|string|max:20',
+        'telefono'         => 'required|string|max:30',
+        'email'            => 'nullable|email',
+        'marca_id'         => 'required|exists:marcas,id',
+        'modelo_id'        => 'required|exists:modelos,id',
+        'anio'             => 'required|integer|min:1990',
+        'patente'          => 'required|string|max:20',
+        'kilometraje'      => 'required|integer|min:0',
+        'fecha_hora_turno' => 'required|date|after:now',
+        'tipo_servicio'    => 'required|in:mantenimiento_preventivo,reparacion,diagnostico,service,otros',
+        'mecanico_id'      => 'nullable|exists:users,id',
+        'observaciones'    => 'nullable|string',
+    ]);
+
+    $cliente = \App\Models\User::firstOrCreate(
+        ['dni' => $request->dni],
+        [
+            'name'     => $request->name,
+            'apellido' => $request->apellido,
+            'email'    => $request->email ?? $request->dni . '@presencial.talleraquino.com',
+            'telefono' => $request->telefono,
+            'rol'      => 'cliente',
+            'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
+        ]
+    );
+
+    $vehiculo = \App\Models\Vehiculo::firstOrCreate(
+        ['patente' => strtoupper($request->patente)],
+        [
+            'cliente_id' => $cliente->id,
+            'marca_id'   => $request->marca_id,
+            'modelo_id'  => $request->modelo_id,
+            'anio'       => $request->anio,
+            'kilometraje'=> $request->kilometraje,
+        ]
+    );
+
+    $turno = \App\Models\Turno::create([
+        'cliente_id'       => $cliente->id,
+        'vehiculo_id'      => $vehiculo->id,
+        'mecanico_id'      => $request->mecanico_id,
+        'fecha_hora_turno' => $request->fecha_hora_turno,
+        'tipo_servicio'    => $request->tipo_servicio,
+        'observaciones'    => $request->observaciones,
+        'estado'           => 'confirmado',
+        'es_presencial'    => true,
+    ]);
+
+    return redirect()->route('admin.turnos.show', $turno)
+        ->with('success', "Turno registrado. N° de seguimiento: {$turno->numero_seguimiento}");
+}
+}
