@@ -23,16 +23,26 @@
             <div>
                 <label class="ta-label">Estado</label>
                 <select name="estado" class="ta-input ta-select" style="width:180px">
-                    <option value="">Todos los estados</option>
-                    @foreach(['ingresado','en_diagnostico','en_reparacion','finalizado','entregado'] as $e)
+                    <option value="">Activos</option>
+                    @foreach(['ingresado','en_diagnostico','en_reparacion','finalizado'] as $e)
                         <option value="{{ $e }}" {{ request('estado') === $e ? 'selected' : '' }}>
                             {{ ucfirst(str_replace('_',' ',$e)) }}
                         </option>
                     @endforeach
                 </select>
             </div>
+            <div style="display:flex; align-items:flex-end; padding-bottom:2px">
+                <label style="display:flex; align-items:center; gap:7px; font-size:.86rem; color:var(--text); cursor:pointer; white-space:nowrap; padding:9px 14px; border:1.5px solid var(--border); border-radius:8px; background:white">
+                    <input type="checkbox" name="ver_entregados" value="1"
+                        {{ request('ver_entregados') ? 'checked' : '' }}
+                        style="width:15px; height:15px; accent-color:var(--blue)">
+                    Ver entregados
+                </label>
+            </div>
             <div style="display:flex; gap:8px; align-items:flex-end">
-                <button type="submit" class="btn-primary-ta" style="height:40px">Filtrar</button>
+                <button type="submit" class="btn-primary-ta" style="height:40px">
+                    <i class="bi bi-funnel"></i> Filtrar
+                </button>
                 <a href="{{ route('admin.trabajos.index') }}" class="btn-secondary-ta" style="height:40px">Limpiar</a>
             </div>
         </form>

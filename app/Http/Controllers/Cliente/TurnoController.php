@@ -71,16 +71,18 @@ class TurnoController extends Controller
         // Obtener o crear vehículo
         $vehiculoId = $request->vehiculo_id;
         if (! $vehiculoId) {
-            $vehiculo = Vehiculo::create([
-                'cliente_id' => $cliente->id,
-                'marca_id'   => $request->marca_id,
-                'modelo_id'  => $request->modelo_id,
-                'anio'       => $request->anio,
-                'patente'    => strtoupper($request->patente),
-                'kilometraje'=> $request->kilometraje,
-            ]);
+            $vehiculo = Vehiculo::firstOrCreate(
+                ['patente' => strtoupper($request->patente)],
+                [
+                    'cliente_id' => $cliente->id,
+                    'marca_id'   => $request->marca_id,
+                    'modelo_id'  => $request->modelo_id,
+                    'anio'       => $request->anio,
+                    'kilometraje'=> $request->kilometraje,
+                ]
+            );
             $vehiculoId = $vehiculo->id;
-        }
+}
 
         $turno = Turno::create([
             'cliente_id'       => $cliente->id,

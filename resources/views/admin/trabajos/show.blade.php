@@ -143,12 +143,17 @@
                         <label class="ta-label">Tipo de servicio <span class="req">*</label>
                         <select name="tipo_servicio" class="ta-input ta-select" required>
                             <option value="">Seleccioná...</option>
-                            <option value="mantenimiento_preventivo">Mantenimiento Preventivo</option>
-                            <option value="reparacion">Reparación</option>
-                            <option value="diagnostico">Diagnóstico</option>
-                            <option value="service">Service</option>
-                            <option value="otros">Otros</option>
+                            @foreach(['mantenimiento_preventivo'=>'Mantenimiento Preventivo','reparacion'=>'Reparación','diagnostico'=>'Diagnóstico','service'=>'Service','otros'=>'Otros'] as $val=>$label)
+                            <option value="{{ $val }}" {{ ($ingreso->turno?->tipo_servicio === $val || old('tipo_servicio') === $val) ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                            @endforeach
                         </select>
+                        @if($ingreso->turno)
+                        <div style="font-size:.74rem; color:var(--blue); margin-top:3px">
+                            <i class="bi bi-info-circle"></i> Cargado desde el turno del cliente
+                        </div>
+                        @endif
                     </div>
                     <div>
                         <label class="ta-label">Estado <span class="req">*</label>

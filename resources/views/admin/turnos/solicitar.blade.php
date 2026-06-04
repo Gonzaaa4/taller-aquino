@@ -251,6 +251,10 @@
                         @foreach($marcas as $marca)
                         <option value="{{ $marca->id }}">{{ $marca->nombre }}</option>
                         @endforeach
+                        <option value="otra">Otra (especificar)</option>
+                    </select>
+                    <input type="text" name="marca_nombre_custom" id="marca_custom" class="field-input"
+                        placeholder="Escribí la marca..." style="display:none; margin-top:8px">
                     </select>
                     <span class="field-error" id="err-marca"></span>
                 </div>
@@ -258,6 +262,10 @@
                     <label>Modelo <span class="req-star">*</span></label>
                     <select class="field-input" id="modelo_select_form" disabled>
                         <option value="">— Primero elegí la marca —</option>
+                    <option value="otro">Otro (especificar)</option>
+                </select>
+                <input type="text" name="modelo_nombre_custom" id="modelo_custom" class="field-input"
+                    placeholder="Escribí el modelo..." style="display:none; margin-top:8px">
                     </select>
                     <span class="field-error" id="err-modelo"></span>
                 </div>
@@ -526,6 +534,25 @@ document.getElementById('buscarDni').addEventListener('keydown', e => {
 // ── MARCA / MODELO ────────────────────────────────────────────────────
 function cargarModelos(marcaId) {
     const sel = document.getElementById('modelo_select_form');
+    const marcaCustom = document.getElementById('marca_custom');
+
+    // Si eligió "Otra" marca
+    if (marcaId === 'otra') {
+        marcaCustom.style.display = 'block';
+        marcaCustom.required = true;
+        document.getElementById('marca_id_input').value = '';
+        // Mostrar modelo como texto libre también
+        sel.innerHTML = '<option value="otro">Otro (especificar)</option>';
+        sel.disabled = false;
+        document.getElementById('modelo_custom').style.display = 'block';
+        document.getElementById('modelo_custom').required = true;
+        document.getElementById('modelo_id_input').value = '';
+        return;
+    } else {
+        marcaCustom.style.display = 'none';
+        marcaCustom.required = false;
+    }
+
     document.getElementById('marca_id_input').value = marcaId;
     sel.innerHTML = '<option>Cargando...</option>';
     sel.disabled = true;
@@ -544,12 +571,22 @@ function cargarModelos(marcaId) {
                 o.value = m.id; o.textContent = m.nombre;
                 sel.appendChild(o);
             });
+            sel.appendChild(new Option('Otro (especificar)', 'otro'));
             sel.disabled = false;
         });
 }
 
 document.getElementById('modelo_select_form').addEventListener('change', function() {
-    document.getElementById('modelo_id_input').value = this.value;
+    const modeloCustom = document.getElementById('modelo_custom');
+    if (this.value === 'otro') {
+        modeloCustom.style.display = 'block';
+        modeloCustom.required = true;
+        document.getElementById('modelo_id_input').value = '';
+    } else {
+        modeloCustom.style.display = 'none';
+        modeloCustom.required = false;
+        document.getElementById('modelo_id_input').value = this.value;
+    }
 });
 
 // ── SERVICE RADIO CARDS ───────────────────────────────────────────────
@@ -565,6 +602,13 @@ document.querySelectorAll('.radio-card input[type="radio"]').forEach(r => {
 function validateAll() {
     let ok = true;
 
+    if (!document.getElementById('marca_select_form').value) {
+    document.getElementById('err-marca').textContent = 'Seleccioná la marca.'; ok = false;
+    }
+    if (!document.getElementById('modelo_select_form').value &&
+        !document.getElementById('modelo_custom').value) {
+        document.getElementById('err-modelo').textContent = 'Seleccioná el modelo.'; ok = false;
+    }
     if (!document.getElementById('f_name').value.trim()) {
         document.getElementById('err-name').textContent = 'Requerido.'; ok = false;
     }
@@ -611,26 +655,47 @@ document.getElementById('btnVerificar').addEventListener('click', () => {
     // Setear fecha/hora hidden
     document.getElementById('fecha_hora_turno_input').value = `${selectedDate}T${selectedSlot}`;
 
-    // Setear marca/modelo hidden (por si no se setearon por onchange)
-    document.getElementById('marca_id_input').value  = document.getElementById('marca_select_form').value;
-    document.getElementById('modelo_id_input').value = document.getElementById('modelo_select_form').value;
+    // Setear marca/modelo hidden
+    const marcaVal = document.getElementById('marca_select_form').value;
+    if (marcaVal !== 'otra') {
+        document.getElementById('marca_id_input').value = marcaVal;
+    }
+    const modeloVal = document.getElementById('modelo_select_form').value;
+    if (modeloVal !== 'otro') {
+        document.getElementById('modelo_id_input').value = modeloVal;
+    }
 
-    // Agregar campos de patente/anio/km como hidden dinámicos
+    // Campos del cliente como hidden (necesario para campos readonly)
+    setHidden('name',      document.getElementById('f_name').value);
+    setHidden('apellido',  document.getElementById('f_apellido').value);
+    setHidden('dni',       document.getElementById('f_dni').value);
+    setHidden('telefono',  document.getElementById('f_telefono').value);
+    setHidden('email',     document.getElementById('f_email').value);
+
+    // Vehículo
     setHidden('anio',        document.getElementById('anio_input').value);
     setHidden('patente',     document.getElementById('patente_input').value.toUpperCase());
     setHidden('kilometraje', document.getElementById('km_input').value || '0');
 
     // Construir resumen
-    const marca   = document.getElementById('marca_select_form').options[document.getElementById('marca_select_form').selectedIndex]?.text || '';
-    const modelo  = document.getElementById('modelo_select_form').options[document.getElementById('modelo_select_form').selectedIndex]?.text || '';
-    const srv     = document.querySelector('input[name="tipo_servicio"]:checked')?.value.replace(/_/g,' ') || '';
-    const mecEl   = document.querySelector('select[name="mecanico_id"]');
-    const mecTxt  = mecEl.options[mecEl.selectedIndex]?.text || 'Sin asignar';
+    const marcaOpt = document.getElementById('marca_select_form');
+    const marcaTxt = marcaOpt.value === 'otra'
+        ? document.getElementById('marca_custom').value
+        : marcaOpt.options[marcaOpt.selectedIndex]?.text || '';
+
+    const modeloOpt = document.getElementById('modelo_select_form');
+    const modeloTxt = modeloOpt.value === 'otro'
+        ? document.getElementById('modelo_custom').value
+        : modeloOpt.options[modeloOpt.selectedIndex]?.text || '';
+
+    const srv    = document.querySelector('input[name="tipo_servicio"]:checked')?.value.replace(/_/g,' ') || '';
+    const mecEl  = document.querySelector('select[name="mecanico_id"]');
+    const mecTxt = mecEl.options[mecEl.selectedIndex]?.text || 'Sin asignar';
     const [yr,mo,da] = selectedDate.split('-');
-    const months  = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    const months = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
     document.getElementById('sum-cliente').textContent  = document.getElementById('f_name').value + ' ' + document.getElementById('f_apellido').value;
-    document.getElementById('sum-vehiculo').textContent = `${marca} ${modelo} · ${document.getElementById('patente_input').value.toUpperCase()}`;
+    document.getElementById('sum-vehiculo').textContent = `${marcaTxt} ${modeloTxt} · ${document.getElementById('patente_input').value.toUpperCase()}`;
     document.getElementById('sum-servicio').textContent = srv.replace(/\b\w/g, c => c.toUpperCase());
     document.getElementById('sum-fecha').textContent    = `${da} ${months[parseInt(mo)-1]} ${yr} a las ${selectedSlot} hs`;
     document.getElementById('sum-mecanico').textContent = mecTxt;

@@ -153,7 +153,12 @@ class TrabajoController extends Controller
     public function index(Request $request)
     {
         $ingresos = IngresoVehiculo::with(['vehiculo.marca', 'vehiculo.modelo', 'cliente', 'turno'])
-            ->when($request->estado, fn($q) => $q->where('estado', $request->estado))
+            ->when($request->estado,
+                fn($q) => $q->where('estado', $request->estado),
+                fn($q) => $request->ver_entregados
+                    ? $q
+                    : $q->whereNotIn('estado', ['entregado'])
+            )
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 

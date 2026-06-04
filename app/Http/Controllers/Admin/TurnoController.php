@@ -101,8 +101,10 @@ public function guardar(Request $request)
         'dni'              => 'required|string|max:20',
         'telefono'         => 'required|string|max:30',
         'email'            => 'nullable|email',
-        'marca_id'         => 'required|exists:marcas,id',
-        'modelo_id'        => 'required|exists:modelos,id',
+        'marca_id'           => 'nullable|exists:marcas,id',
+        'marca_nombre_custom'=> 'required_without:marca_id|nullable|string|max:100',
+        'modelo_id'          => 'nullable|exists:modelos,id',
+        'modelo_nombre_custom'=> 'required_without:modelo_id|nullable|string|max:100',
         'anio'             => 'required|integer|min:1990',
         'patente'          => 'required|string|max:20',
         'kilometraje'      => 'required|integer|min:0',
@@ -130,6 +132,22 @@ public function guardar(Request $request)
             'rol'      => 'cliente',
             'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
         ]);
+    }
+
+    // Si eligió "Otra" marca, crearla
+    if (!$request->marca_id && $request->marca_nombre_custom) {
+        $marca = \App\Models\Marca::firstOrCreate(
+            ['nombre' => ucfirst(trim($request->marca_nombre_custom))]
+        );
+        $request->merge(['marca_id' => $marca->id]);
+    }
+
+    // Si eligió "Otro" modelo, crearlo
+    if (!$request->modelo_id && $request->modelo_nombre_custom) {
+        $modelo = \App\Models\Modelo::firstOrCreate(
+            ['nombre' => ucfirst(trim($request->modelo_nombre_custom)), 'marca_id' => $request->marca_id]
+        );
+        $request->merge(['modelo_id' => $modelo->id]);
     }
 
     $vehiculo = \App\Models\Vehiculo::firstOrCreate(
