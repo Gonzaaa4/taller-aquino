@@ -58,6 +58,7 @@ class TrabajoController extends Controller
             'tipo_servicio'      => 'required|in:mantenimiento_preventivo,reparacion,diagnostico,service,otros',
             'descripcion_trabajo'=> 'required|string|min:20',
             'costo_mano_obra'    => 'required|numeric|min:0',
+            'duracion_minutos'   => 'nullable|numeric|min:0',  // ← agregar esta línea
             'estado'             => 'required|in:pendiente,en_proceso,finalizado',
             'repuestos'          => 'nullable|array',
             'repuestos.*.id'     => 'required|exists:repuestos,id',
@@ -100,6 +101,9 @@ class TrabajoController extends Controller
                 'costo_mano_obra'    => $request->costo_mano_obra,
                 'costo_repuestos'    => $costoRepuestos,
                 'estado'             => $request->estado,
+                'duracion_minutos'   => $request->duracion_minutos  // ← agregar esta línea
+                    ? intval($request->duracion_minutos * 60)
+                    : null,
             ]);
 
             // Sincronizar repuestos con la tabla pivote

@@ -103,59 +103,110 @@
 
 {{-- Modal registrar ingreso --}}
 <div id="modalIngreso" style="display:none; position:fixed; inset:0; background:rgba(11,28,46,.65); z-index:500; align-items:center; justify-content:center; padding:20px">
-    <div style="background:white; border-radius:14px; width:100%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.3)">
-        <div style="padding:18px 22px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:white; z-index:1">
+    <div style="background:white; border-radius:14px; width:100%; max-width:540px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.3)">
+
+        <div style="padding:18px 22px; border-bottom:1px solid var(--border); background:var(--light); display:flex; justify-content:space-between; align-items:center">
             <div style="font-family:'Oswald',sans-serif; font-size:1rem; color:var(--navy); letter-spacing:.04em">
                 <i class="bi bi-box-arrow-in-right" style="color:var(--blue); margin-right:8px"></i>REGISTRAR INGRESO DE VEHÍCULO
             </div>
-            <button onclick="document.getElementById('modalIngreso').style.display='none'"
+            <button type="button" onclick="cerrarModalIngreso()"
                 style="background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted); line-height:1">×</button>
         </div>
-        <form method="POST" action="{{ route('admin.trabajos.ingreso') }}">
+
+        <form method="POST" action="{{ route('admin.trabajos.ingreso') }}" id="formIngreso">
             @csrf
-            <div style="padding:22px; display:grid; grid-template-columns:1fr 1fr; gap:14px">
-                <div style="grid-column:span 2">
-                    <label class="ta-label">Turno asociado <span style="color:var(--muted); font-weight:400">(opcional)</label>
-                    <select name="turno_id" id="turnoSelect" class="ta-input ta-select" onchange="cargarDatosTurno(this.value)">
-                        <option value="">Sin turno / ingreso directo</option>
-                        @foreach(\App\Models\Turno::whereIn('estado',['pendiente','confirmado'])->with(['cliente','vehiculo'])->orderBy('fecha_hora_turno')->get() as $t)
-                            <option value="{{ $t->id }}" data-cliente="{{ $t->cliente_id }}" data-vehiculo="{{ $t->vehiculo_id }}">
-                                {{ $t->numero_seguimiento }} — {{ $t->cliente->nombreCompleto() }} — {{ $t->fecha_hora_turno->format('d/m/Y H:i') }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            {{-- Campos hidden que se llenan automáticamente --}}
+            <input type="hidden" name="cliente_id"          id="h_cliente_id">
+            <input type="hidden" name="vehiculo_id"         id="h_vehiculo_id">
+            <input type="hidden" name="kilometraje_ingreso" id="h_km">
+            <input type="hidden" name="descripcion_problema" id="h_obs">
+
+            <div style="padding:22px; display:flex; flex-direction:column; gap:16px">
+
+                {{-- Solo selector de turno --}}
                 <div>
-                    <label class="ta-label">Cliente <span class="req">*</label>
-                    <select name="cliente_id" id="clienteSelect" class="ta-input ta-select" required>
-                        <option value="">Seleccioná...</option>
-                        @foreach(\App\Models\User::where('rol','cliente')->orderBy('name')->get() as $c)
-                            <option value="{{ $c->id }}">{{ $c->nombreCompleto() }} — DNI {{ $c->dni }}</option>
+                    <label class="ta-label">Turno asociado <span class="req">*</span></label>
+                    <select name="turno_id" id="turnoSelectModal" class="ta-input ta-select"
+                        onchange="cargarTurno(this.value)" required>
+                        <option value="">— Seleccioná un turno pendiente —</option>
+                        @foreach(\App\Models\Turno::whereIn('estado',['pendiente','confirmado'])
+                            ->with(['cliente','vehiculo.marca','vehiculo.modelo'])
+                            ->orderBy('fecha_hora_turno')->get() as $t)
+                        <option value="{{ $t->id }}"
+                            data-cliente-id="{{ $t->cliente_id }}"
+                            data-vehiculo-id="{{ $t->vehiculo_id }}"
+                            data-cliente="{{ $t->cliente->nombreCompleto() }}"
+                            data-telefono="{{ $t->cliente->telefono }}"
+                            data-vehiculo="{{ $t->vehiculo->marca->nombre }} {{ $t->vehiculo->modelo->nombre }} {{ $t->vehiculo->anio }}"
+                            data-patente="{{ $t->vehiculo->patente }}"
+                            data-km="{{ $t->vehiculo->kilometraje }}"
+                            data-servicio="{{ ucfirst(str_replace('_',' ',$t->tipo_servicio)) }}"
+                            data-obs="{{ $t->observaciones ?? '' }}">
+                            {{ $t->numero_seguimiento }}
+                            — {{ $t->cliente->nombreCompleto() }}
+                            — {{ $t->vehiculo->marca->nombre }} {{ $t->vehiculo->modelo->nombre }} ({{ $t->vehiculo->patente }})
+                            — {{ $t->fecha_hora_turno->format('d/m/Y H:i') }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
-                <div>
-                    <label class="ta-label">Vehículo <span class="req">*</label>
-                    <select name="vehiculo_id" id="vehiculoSelect" class="ta-input ta-select" required>
-                        <option value="">Seleccioná...</option>
-                        @foreach(\App\Models\Vehiculo::with(['marca','modelo'])->get() as $v)
-                            <option value="{{ $v->id }}">{{ $v->marca->nombre }} {{ $v->modelo->nombre }} — {{ $v->patente }}</option>
-                        @endforeach
-                    </select>
+
+                {{-- Datos cargados automáticamente (solo lectura) --}}
+                <div id="datosAuto" style="display:none; background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden">
+
+                    {{-- Chip del vehículo --}}
+                    <div style="background:linear-gradient(135deg,#0b1c2e,#1255a1); padding:14px 18px; display:flex; align-items:center; gap:14px">
+                        <div style="width:40px; height:40px; border-radius:9px; background:rgba(255,255,255,.12); display:flex; align-items:center; justify-content:center; flex-shrink:0">
+                            <i class="bi bi-car-front" style="color:white; font-size:1.2rem"></i>
+                        </div>
+                        <div style="flex:1">
+                            <div id="da_vehiculo" style="font-family:'Oswald',sans-serif; font-size:1rem; color:white; letter-spacing:.04em"></div>
+                            <div style="display:flex; gap:6px; margin-top:4px; flex-wrap:wrap">
+                                <span id="da_patente" style="background:rgba(255,255,255,.2); color:white; font-size:.72rem; padding:2px 9px; border-radius:20px; font-weight:700; letter-spacing:.06em"></span>
+                                <span id="da_servicio" style="background:rgba(255,255,255,.12); color:rgba(255,255,255,.85); font-size:.72rem; padding:2px 9px; border-radius:20px"></span>
+                            </div>
+                        </div>
+                        <div style="text-align:right; flex-shrink:0">
+                            <div style="font-size:.65rem; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:.07em; margin-bottom:2px">Cliente</div>
+                            <div id="da_cliente" style="font-size:.9rem; font-weight:600; color:white"></div>
+                            <div id="da_telefono" style="font-size:.76rem; color:rgba(255,255,255,.55)"></div>
+                        </div>
+                    </div>
+
+                    {{-- Filas de datos --}}
+                    <div style="padding:14px 18px; display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                        <div>
+                            <div style="font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:3px">Kilometraje registrado</div>
+                            <div id="da_km" style="font-weight:600; color:var(--navy)"></div>
+                        </div>
+                        <div id="da_obs_wrap" style="display:none">
+                            <div style="font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.07em; margin-bottom:3px">Observaciones del cliente</div>
+                            <div id="da_obs" style="font-size:.86rem; color:var(--text)"></div>
+                        </div>
+                    </div>
+
+                    <div style="padding:10px 18px; border-top:1px solid var(--border); background:rgba(46,141,255,.05)">
+                        <div style="font-size:.78rem; color:var(--muted)">
+                            <i class="bi bi-info-circle" style="color:var(--blue); margin-right:5px"></i>
+                            Todos los datos se cargan automáticamente desde el turno seleccionado.
+                        </div>
+                    </div>
                 </div>
-                <div style="grid-column:span 2">
-                    <label class="ta-label">Kilometraje actual <span class="req">*</label>
-                    <input type="number" name="kilometraje_ingreso" class="ta-input" min="0" required placeholder="Ej: 85000">
+
+                {{-- Sin turnos disponibles --}}
+                @if(\App\Models\Turno::whereIn('estado',['pendiente','confirmado'])->count() === 0)
+                <div class="ta-alert info" style="margin:0">
+                    <span class="ta-alert-icon"><i class="bi bi-info-circle-fill"></i></span>
+                    <div>No hay turnos pendientes o confirmados. Primero confirmá un turno desde la sección Turnos.</div>
                 </div>
-                <div style="grid-column:span 2">
-                    <label class="ta-label">Descripción del problema</label>
-                    <textarea name="descripcion_problema" class="ta-input ta-textarea"
-                        placeholder="Describí el problema reportado por el cliente..."></textarea>
-                </div>
+                @endif
             </div>
-            <div style="padding:16px 22px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px">
-                <button type="button" class="btn-secondary-ta" onclick="document.getElementById('modalIngreso').style.display='none'">Cancelar</button>
-                <button type="submit" class="btn-primary-ta"><i class="bi bi-check-circle"></i> Registrar Ingreso</button>
+
+            <div style="padding:14px 22px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; background:var(--card)">
+                <button type="button" class="btn-secondary-ta" onclick="cerrarModalIngreso()">Cancelar</button>
+                <button type="submit" class="btn-primary-ta" id="btnIngreso" disabled>
+                    <i class="bi bi-check-circle"></i> Registrar Ingreso
+                </button>
             </div>
         </form>
     </div>
@@ -163,13 +214,51 @@
 
 @push('scripts')
 <script>
-function cargarDatosTurno(id) {
-    if (!id) return;
-    const opt = document.querySelector(`#turnoSelect option[value="${id}"]`);
-    if (opt) {
-        document.getElementById('clienteSelect').value = opt.dataset.cliente;
-        document.getElementById('vehiculoSelect').value = opt.dataset.vehiculo;
+function cargarTurno(turnoId) {
+    const btn   = document.getElementById('btnIngreso');
+    const datos = document.getElementById('datosAuto');
+
+    if (!turnoId) {
+        btn.disabled = true;
+        datos.style.display = 'none';
+        return;
     }
+
+    const opt = document.querySelector(`#turnoSelectModal option[value="${turnoId}"]`);
+    if (!opt) return;
+
+    // Llenar hidden inputs
+    document.getElementById('h_cliente_id').value = opt.dataset.clienteId;
+    document.getElementById('h_vehiculo_id').value = opt.dataset.vehiculoId;
+    document.getElementById('h_km').value          = opt.dataset.km;
+    document.getElementById('h_obs').value         = opt.dataset.obs;
+
+    // Mostrar datos
+    document.getElementById('da_vehiculo').textContent = opt.dataset.vehiculo;
+    document.getElementById('da_patente').textContent  = opt.dataset.patente;
+    document.getElementById('da_servicio').textContent = opt.dataset.servicio;
+    document.getElementById('da_cliente').textContent  = opt.dataset.cliente;
+    document.getElementById('da_telefono').textContent = opt.dataset.telefono;
+    document.getElementById('da_km').textContent       = Number(opt.dataset.km).toLocaleString('es-AR') + ' km';
+
+    const obs = opt.dataset.obs?.trim();
+    const obsWrap = document.getElementById('da_obs_wrap');
+    if (obs) {
+        document.getElementById('da_obs').textContent = obs;
+        obsWrap.style.display = 'block';
+    } else {
+        obsWrap.style.display = 'none';
+    }
+
+    datos.style.display = 'block';
+    btn.disabled = false;
+}
+
+function cerrarModalIngreso() {
+    document.getElementById('modalIngreso').style.display = 'none';
+    document.getElementById('turnoSelectModal').value = '';
+    document.getElementById('datosAuto').style.display = 'none';
+    document.getElementById('btnIngreso').disabled = true;
 }
 </script>
 @endpush

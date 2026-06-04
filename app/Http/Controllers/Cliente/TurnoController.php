@@ -96,11 +96,14 @@ class TurnoController extends Controller
     }
 
     public function confirmacion(Turno $turno)
-    {
-        $this->authorize('view', $turno);
-        $turno->load(['vehiculo.marca', 'vehiculo.modelo']);
-        return view('cliente.turnos.confirmacion', compact('turno'));
+{
+    // Verificar que el turno pertenece al cliente logueado
+    if ($turno->cliente_id !== auth()->id()) {
+        abort(403);
     }
+    $turno->load(['vehiculo.marca', 'vehiculo.modelo']);
+    return view('cliente.turnos.confirmacion', compact('turno'));
+}
 
     public function cancelar(Request $request, Turno $turno)
     {

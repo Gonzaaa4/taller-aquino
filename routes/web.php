@@ -15,7 +15,12 @@ use App\Http\Controllers\Cliente\VehiculoController;
 
 // ── Página de inicio ─────────────────────────────────────────────
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return auth()->user()->esCliente()
+            ? redirect()->route('cliente.dashboard')
+            : redirect()->route('admin.dashboard');
+    }
+    return redirect()->route('login');
 })->name('home');
 
 // ── Autenticación ────────────────────────────────────────────────

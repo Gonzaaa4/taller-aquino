@@ -542,20 +542,10 @@
             <div class="nav-section-label">Inventario</div>
             <a href="{{ route('admin.inventario.repuestos') }}" class="nav-item {{ request()->routeIs('admin.inventario.repuesto*') ? 'active' : '' }}">
                 <div class="nav-icon"><i class="bi bi-box-seam"></i></div>
-                <span class="nav-label">Repuestos</span>
+                <span class="nav-label">Inventario</span>
                 @php $alertas = \App\Models\Repuesto::activo()->conStockBajo()->count(); @endphp
                 @if($alertas > 0)<span class="nav-badge warn">{{ $alertas }}</span>@endif
             </a>
-            <a href="{{ route('admin.inventario.herramientas') }}" class="nav-item {{ request()->routeIs('admin.inventario.herramienta*') ? 'active' : '' }}">
-                <div class="nav-icon"><i class="bi bi-tools"></i></div>
-                <span class="nav-label">Herramientas</span>
-            </a>
-            @if(auth()->user()->esAdmin() || auth()->user()->esAdministrativo())
-            <a href="{{ route('admin.proveedores.index') }}" class="nav-item {{ request()->routeIs('admin.proveedores.*') ? 'active' : '' }}">
-                <div class="nav-icon"><i class="bi bi-truck"></i></div>
-                <span class="nav-label">Proveedores</span>
-            </a>
-            @endif
 
             <div class="nav-section-label">Reportes</div>
             <a href="{{ route('admin.reportes.formulario') }}" class="nav-item {{ request()->routeIs('admin.reportes.*') ? 'active' : '' }}">

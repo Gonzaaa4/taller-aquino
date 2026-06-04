@@ -25,10 +25,11 @@ class TurnoController extends Controller
     }
 
     public function show(Turno $turno)
-    {
-        $turno->load(['cliente', 'vehiculo.marca', 'vehiculo.modelo', 'mecanico', 'ingreso.trabajos.mecanico']);
-        return view('admin.turnos.show', compact('turno'));
-    }
+{
+    $turno->load(['cliente', 'vehiculo.marca', 'vehiculo.modelo', 'mecanico', 'ingreso.trabajos.mecanico']);
+    $mecanicos = \App\Models\User::where('rol', 'mecanico')->where('activo', true)->get();
+    return view('admin.turnos.show', compact('turno', 'mecanicos'));
+}
 
     public function confirmar(Turno $turno)
     {
@@ -111,17 +112,25 @@ public function guardar(Request $request)
         'observaciones'    => 'nullable|string',
     ]);
 
-    $cliente = \App\Models\User::firstOrCreate(
-        ['dni' => $request->dni],
-        [
+    // Buscar cliente por DNI primero, luego por email
+    $cliente = \App\Models\User::where('dni', $request->dni)->first();
+
+    if (!$cliente && $request->email) {
+        $cliente = \App\Models\User::where('email', $request->email)->first();
+    }
+
+    if (!$cliente) {
+        $email = $request->email ?? $request->dni . '@presencial.talleraquino.com';
+        $cliente = \App\Models\User::create([
             'name'     => $request->name,
             'apellido' => $request->apellido,
-            'email'    => $request->email ?? $request->dni . '@presencial.talleraquino.com',
+            'email'    => $email,
+            'dni'      => $request->dni,
             'telefono' => $request->telefono,
             'rol'      => 'cliente',
             'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
-        ]
-    );
+        ]);
+    }
 
     $vehiculo = \App\Models\Vehiculo::firstOrCreate(
         ['patente' => strtoupper($request->patente)],
