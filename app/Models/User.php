@@ -98,4 +98,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(IngresoVehiculo::class, 'registrado_por');
     }
+    public function trabajosComoMecanico()
+    {
+        return $this->hasMany(\App\Models\TrabajoRealizado::class, 'mecanico_id');
+    }
 }

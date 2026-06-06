@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Vehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use App\Models\Modelo;
 
 class TurnoController extends Controller
 {
@@ -31,15 +32,19 @@ class TurnoController extends Controller
     return view('admin.turnos.show', compact('turno', 'mecanicos'));
 }
 
-    public function confirmar(Turno $turno)
+    public function confirmar(Request $request, Turno $turno)
     {
-        if (! $turno->estaPendiente()) {
+        if (!$turno->estaPendiente()) {
             return back()->with('error', 'Este turno no puede ser confirmado.');
         }
 
-        $turno->update(['estado' => 'confirmado']);
+        $turno->update([
+            'estado'      => 'confirmado',
+            'mecanico_id' => $request->mecanico_id ?: null,
+        ]);
 
-        return back()->with('success', "Turno #{$turno->numero_seguimiento} confirmado.");
+        return redirect()->route('admin.turnos.show', $turno)
+            ->with('success', "Turno #{$turno->numero_seguimiento} confirmado.");
     }
 
     public function asignarMecanico(Request $request, Turno $turno)

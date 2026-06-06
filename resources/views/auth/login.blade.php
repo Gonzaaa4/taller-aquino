@@ -304,10 +304,13 @@
         <a href="{{ route('register') }}" class="btn-register">
             Registrarme como cliente
         </a>
-
         <a href="{{ route('consultar.estado') }}" class="consultar-link">
             <i class="bi bi-search" style="margin-right:5px"></i>
             Consultar estado sin iniciar sesión
+        </a>
+        <a href="{{ route('turno.publico.solicitar') }}" class="consultar-link" style="margin-top:8px">
+            <i class="bi bi-calendar-plus" style="margin-right:5px"></i>
+            Solicitar turno sin cuenta
         </a>
     </div>
 </div>

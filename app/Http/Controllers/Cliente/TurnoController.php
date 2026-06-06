@@ -11,6 +11,7 @@ use App\Models\IngresoVehiculo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use App\Models\User;
 
 class TurnoController extends Controller
 {
@@ -196,4 +197,106 @@ class TurnoController extends Controller
             ->whereYear('fecha_cancelacion', now()->year)
             ->count() >= 2;
     }
+
+public function solicitarPublico()
+{
+    $marcas    = Marca::orderBy('nombre')->get();
+    $vehiculos = collect();
+    return view('cliente.turnos.solicitar-publico', compact('marcas', 'vehiculos'));
+}
+
+public function guardarPublico(Request $request)
+{
+    $request->validate([
+        'name'                 => 'required|string|max:100',
+        'apellido'             => 'required|string|max:100',
+        'dni'                  => 'required|string|max:20',
+        'telefono'             => 'required|string|max:30',
+        'email'                => 'nullable|email',
+        'fecha_hora_turno'     => 'required|date|after:now',
+        'tipo_servicio'        => 'required|in:mantenimiento_preventivo,reparacion,diagnostico,service,otros',
+        'observaciones'        => 'nullable|string|max:500',
+        'marca_id'             => 'nullable|exists:marcas,id',
+        'marca_nombre_custom'  => 'nullable|string|max:100',
+        'modelo_id'            => 'nullable|exists:modelos,id',
+        'modelo_nombre_custom' => 'nullable|string|max:100',
+        'anio'                 => 'required|integer|min:1990',
+        'patente'              => 'required|string|max:20',
+        'kilometraje'          => 'nullable|integer|min:0',
+    ]);
+
+    // Buscar o crear cliente
+    $cliente = User::where('dni', $request->dni)->first();
+    if (!$cliente && $request->email) {
+        $cliente = User::where('email', $request->email)->first();
+    }
+    if (!$cliente) {
+        $cliente = User::create([
+            'name'     => $request->name,
+            'apellido' => $request->apellido,
+            'email'    => $request->email ?? $request->dni . '@invitado.talleraquino.com',
+            'dni'      => $request->dni,
+            'telefono' => $request->telefono,
+            'rol'      => 'cliente',
+            'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(12)),
+        ]);
+    }
+
+    // Marca custom
+    if (!$request->marca_id && $request->marca_nombre_custom) {
+        $marca = Marca::firstOrCreate(['nombre' => ucfirst(trim($request->marca_nombre_custom))]);
+        $request->merge(['marca_id' => $marca->id]);
+    }
+
+    // Modelo custom
+    if (!$request->modelo_id && $request->modelo_nombre_custom) {
+        $modelo = Modelo::firstOrCreate([
+            'nombre'   => ucfirst(trim($request->modelo_nombre_custom)),
+            'marca_id' => $request->marca_id,
+        ]);
+        $request->merge(['modelo_id' => $modelo->id]);
+    }
+
+    // Vehículo
+    $vehiculo = Vehiculo::firstOrCreate(
+        ['patente' => strtoupper($request->patente)],
+        [
+            'cliente_id'  => $cliente->id,
+            'marca_id'    => $request->marca_id,
+            'modelo_id'   => $request->modelo_id,
+            'anio'        => $request->anio,
+            'kilometraje' => $request->kilometraje ?? 0,
+        ]
+    );
+
+    // Verificar disponibilidad
+    $conflicto = Turno::whereDate('fecha_hora_turno', Carbon::parse($request->fecha_hora_turno)->toDateString())
+        ->whereTime('fecha_hora_turno', Carbon::parse($request->fecha_hora_turno)->toTimeString())
+        ->whereNotIn('estado', ['cancelado'])
+        ->exists();
+
+    if ($conflicto) {
+        return back()->with('error', 'El horario seleccionado ya está ocupado. Por favor elegí otro.');
+    }
+
+    $turno = Turno::create([
+        'cliente_id'       => $cliente->id,
+        'vehiculo_id'      => $vehiculo->id,
+        'fecha_hora_turno' => $request->fecha_hora_turno,
+        'tipo_servicio'    => $request->tipo_servicio,
+        'observaciones'    => $request->observaciones,
+        'estado'           => 'pendiente',
+    ]);
+
+    return redirect()->route('turno.publico.confirmacion', $turno->numero_seguimiento)
+        ->with('success', "¡Turno solicitado! Tu número de seguimiento es: {$turno->numero_seguimiento}");
+}
+
+public function confirmacionPublica($numero)
+{
+    $turno = Turno::with(['vehiculo.marca', 'vehiculo.modelo'])
+        ->where('numero_seguimiento', $numero)
+        ->firstOrFail();
+    return view('cliente.turnos.confirmacion-publica', compact('turno'));
+}
 }

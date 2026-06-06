@@ -150,8 +150,8 @@
             <h1 class="page-title">Solicitar Turno</h1>
             <p class="page-subtitle">Completá los datos para reservar tu turno en el taller</p>
         </div>
-        <a href="{{ route('cliente.dashboard') }}" class="btn-secondary-ta">
-            <i class="bi bi-arrow-left"></i> Volver
+        <a href="{{ route('login') }}" class="btn-secondary-ta">
+            <i class="bi bi-arrow-left"></i> Iniciar sesión
         </a>
     </div>
 </div>
@@ -176,7 +176,7 @@
     </p>
 </div>
 
-<form method="POST" action="{{ route('cliente.turnos.guardar') }}" id="mainForm" novalidate>
+<form method="POST" action="{{ route('turno.publico.guardar') }}" id="mainForm" novalidate>
     @csrf
 
     {{-- Campo hidden para fecha/hora final --}}
@@ -194,24 +194,25 @@
         <div class="section-body">
             <div class="field-grid">
                 <div class="field-group">
-                    <label>Nombre</label>
-                    <input type="text" class="field-input valid" value="{{ auth()->user()->name }}" readonly>
+                    <label>Nombre <span class="req-star">*</span></label>
+                    <input type="text" name="name" id="f_name" class="field-input" placeholder="Juan" required>
                 </div>
                 <div class="field-group">
-                    <label>Apellido</label>
-                    <input type="text" class="field-input valid" value="{{ auth()->user()->apellido }}" readonly>
+                    <label>Apellido <span class="req-star">*</span></label>
+                    <input type="text" name="apellido" id="f_apellido" class="field-input" placeholder="Pérez" required>
                 </div>
                 <div class="field-group">
-                    <label>DNI</label>
-                    <input type="text" class="field-input valid" value="{{ auth()->user()->dni }}" readonly>
+                    <label>DNI <span class="req-star">*</span></label>
+                    <input type="text" name="dni" id="f_dni" class="field-input" placeholder="35123456" required>
                 </div>
                 <div class="field-group">
-                    <label>Teléfono</label>
-                    <input type="text" class="field-input valid" value="{{ auth()->user()->telefono }}" readonly>
+                    <label>Teléfono <span class="req-star">*</span></label>
+                    <input type="text" name="telefono" id="f_telefono" class="field-input" placeholder="3751-000000" required>
                 </div>
                 <div class="field-group field-full">
                     <label>Correo electrónico</label>
-                    <input type="text" class="field-input valid" value="{{ auth()->user()->email }}" readonly>
+                    <input type="email" name="email" id="f_email" class="field-input" placeholder="correo@ejemplo.com">
+                    <span class="field-hint">Opcional</span>
                 </div>
             </div>
         </div>
@@ -224,24 +225,6 @@
             <span class="section-title">DATOS DEL VEHÍCULO</span>
         </div>
         <div class="section-body">
-            @if($vehiculos->isNotEmpty())
-            <div class="field-group field-full" style="margin-bottom:16px">
-                <label>Vehículo registrado <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.78rem">(opcional – seleccioná uno o completá los datos abajo)</span></label>
-                <select class="field-input" id="vehiculo_registrado" onchange="seleccionarVehiculoRegistrado(this.value)">
-                    <option value="">— Ingresar nuevo vehículo —</option>
-                    @foreach($vehiculos as $v)
-                    <option value="{{ $v->id }}"
-                        data-marca="{{ $v->marca_id }}"
-                        data-modelo="{{ $v->modelo_id }}"
-                        data-anio="{{ $v->anio }}"
-                        data-patente="{{ $v->patente }}"
-                        data-km="{{ $v->kilometraje }}">
-                        {{ $v->marca->nombre }} {{ $v->modelo->nombre }} {{ $v->anio }} — {{ $v->patente }}
-                    </option>
-                    @endforeach
-                </select>
-            </div>
-            @endif
 
             <div id="nuevo-vehiculo-form">
                 <div class="field-grid">
@@ -677,7 +660,7 @@ function buildSummary() {
     const [yr, mo, da] = selectedDate.split('-');
     const months  = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
-    document.getElementById('sum-cliente').textContent  = '{{ auth()->user()->nombreCompleto() }}';
+    document.getElementById('sum-cliente').textContent = document.getElementById('f_name').value + ' ' + document.getElementById('f_apellido').value;
     document.getElementById('sum-vehiculo').textContent = vehiculoStr;
     document.getElementById('sum-servicio').textContent = srvText;
     document.getElementById('sum-fecha').textContent    = `${da} ${months[parseInt(mo)-1]} ${yr} a las ${selectedSlot} hs`;

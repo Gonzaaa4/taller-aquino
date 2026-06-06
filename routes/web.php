@@ -145,7 +145,10 @@ Route::prefix('cliente')
 // ── Consulta de estado (pública, sin login) ──────────────────────
 Route::match(['get','post'], '/consultar', [ClienteTurnoController::class, 'consultarEstado'])->name('consultar.estado');
 
+// ── Solicitar turno sin login ─────────────────────────────────────
+Route::get('/solicitar-turno', [ClienteTurnoController::class, 'solicitarPublico'])->name('turno.publico.solicitar');
+Route::post('/solicitar-turno', [ClienteTurnoController::class, 'guardarPublico'])->name('turno.publico.guardar');
+Route::get('/solicitar-turno/confirmacion/{numero}', [ClienteTurnoController::class, 'confirmacionPublica'])->name('turno.publico.confirmacion');
+
 // ── API interna (AJAX) ───────────────────────────────────────────
-Route::middleware('auth')->group(function () {
-    Route::get('/api/marcas/{marca}/modelos', [ClienteTurnoController::class, 'modelosPorMarca'])->name('api.modelos');
-});
+Route::get('/api/marcas/{marca}/modelos', [ClienteTurnoController::class, 'modelosPorMarca'])->name('api.modelos');
