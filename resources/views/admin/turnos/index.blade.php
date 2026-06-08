@@ -112,12 +112,6 @@
                             </a>
                             @if($turno->estaPendiente())
                             <button type="button" class="btn-ok-ta" style="padding:6px 12px; font-size:.8rem"
-                                onclick="abrirConfirmar({{ $turno->id }}, '{{ $turno->numero_seguimiento }}')">
-                                <i class="bi bi-check-circle"></i>
-                            </button>
-                            @endif
-                            @if($turno->puedeSerCancelado())
-                            <button type="button" class="btn-ok-ta" style="padding:6px 12px; font-size:.8rem"
                                 onclick="abrirConfirmar({{ $turno->id }}, '{{ $turno->numero_seguimiento }}', '{{ $turno->cliente->nombreCompleto() }}', '{{ $turno->vehiculo->marca->nombre }} {{ $turno->vehiculo->modelo->nombre }} ({{ $turno->vehiculo->patente }})')">
                                 <i class="bi bi-check-circle"></i>
                             </button>
@@ -165,53 +159,7 @@
     </div>
     @endif
 </div>
-{{-- Modal confirmar turno + asignar mecánico --}}
-<div id="modalConfirmar" style="display:none; position:fixed; inset:0; background:rgba(11,28,46,.65); z-index:500; align-items:center; justify-content:center; padding:20px">
-    <div style="background:white; border-radius:14px; width:100%; max-width:480px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.3)">
-        <div style="padding:18px 22px; border-bottom:1px solid var(--border); background:var(--light); display:flex; justify-content:space-between; align-items:center">
-            <div style="font-family:'Oswald',sans-serif; font-size:1rem; color:var(--navy); letter-spacing:.04em">
-                <i class="bi bi-check-circle" style="color:var(--ok); margin-right:8px"></i>CONFIRMAR TURNO
-            </div>
-            <button type="button" onclick="document.getElementById('modalConfirmar').style.display='none'"
-                style="background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--muted)">×</button>
-        </div>
-        <form id="formConfirmar" method="POST">
-            @csrf
-            <div style="padding:22px; display:flex; flex-direction:column; gap:14px">
-                <div style="font-size:.88rem; color:var(--muted)">
-                    Turno <strong id="conf-nro" style="font-family:'Oswald',sans-serif; color:var(--accent)"></strong>
-                </div>
 
-                <div>
-                    <label class="ta-label">Asignar mecánico</label>
-                    <select name="mecanico_id" id="conf-mecanico" class="ta-input ta-select">
-                        <option value="">— Sin asignar —</option>
-                        @foreach(\App\Models\User::where('rol','mecanico')->where('activo',true)
-                            ->withCount(['trabajosComoMecanico' => fn($q) => $q->whereIn('estado',['en_proceso','pendiente'])])
-                            ->orderBy('trabajos_como_mecanico_count')
-                            ->get() as $m)
-                        <option value="{{ $m->id }}">
-                            {{ $m->nombreCompleto() }}
-                            ({{ $m->trabajos_como_mecanico_count }} trabajos activos)
-                        </option>
-                        @endforeach
-                    </select>
-                    <div style="font-size:.76rem; color:var(--muted); margin-top:4px">
-                        <i class="bi bi-info-circle" style="color:var(--blue)"></i>
-                        Los mecánicos están ordenados por menor carga de trabajo.
-                    </div>
-                </div>
-            </div>
-            <div style="padding:14px 22px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px">
-                <button type="button" class="btn-secondary-ta"
-                    onclick="document.getElementById('modalConfirmar').style.display='none'">Cancelar</button>
-                <button type="submit" class="btn-ok-ta">
-                    <i class="bi bi-check-circle"></i> Confirmar Turno
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
 
 {{-- Modal confirmar turno --}}
 <div id="modalConfirmar" style="display:none; position:fixed; inset:0; background:rgba(11,28,46,.65); z-index:500; align-items:center; justify-content:center; padding:20px">
@@ -284,11 +232,6 @@ function abrirConfirmar(id, nro, cliente, vehiculo) {
     document.getElementById('conf-cliente').textContent = cliente;
     document.getElementById('conf-vehiculo').textContent = vehiculo;
     document.getElementById('formConfirmar').action     = `/admin/turnos/${id}/confirmar`;
-    document.getElementById('modalConfirmar').style.display = 'flex';
-}
-function abrirConfirmar(turnoId, nro) {
-    document.getElementById('conf-nro').textContent = nro;
-    document.getElementById('formConfirmar').action = `/admin/turnos/${turnoId}/confirmar`;
     document.getElementById('modalConfirmar').style.display = 'flex';
 }
 </script>

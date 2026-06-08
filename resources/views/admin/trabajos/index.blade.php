@@ -22,22 +22,13 @@
         <form style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end">
             <div>
                 <label class="ta-label">Estado</label>
-                <select name="estado" class="ta-input ta-select" style="width:180px">
-                    <option value="">Activos</option>
-                    @foreach(['ingresado','en_diagnostico','en_reparacion','finalizado'] as $e)
-                        <option value="{{ $e }}" {{ request('estado') === $e ? 'selected' : '' }}>
-                            {{ ucfirst(str_replace('_',' ',$e)) }}
-                        </option>
-                    @endforeach
+                <select name="estado" class="ta-input ta-select" style="width:200px">
+                    <option value="">Activos (sin entregados)</option>
+                    <option value="ingresado"  {{ request('estado') === 'ingresado' ? 'selected' : '' }}>Ingresado</option>
+                    <option value="en_proceso" {{ request('estado') === 'en_proceso' ? 'selected' : '' }}>En proceso</option>
+                    <option value="finalizado" {{ request('estado') === 'finalizado' ? 'selected' : '' }}>Finalizado</option>
+                    <option value="entregado"  {{ request('estado') === 'entregado' ? 'selected' : '' }}>Entregado</option>
                 </select>
-            </div>
-            <div style="display:flex; align-items:flex-end; padding-bottom:2px">
-                <label style="display:flex; align-items:center; gap:7px; font-size:.86rem; color:var(--text); cursor:pointer; white-space:nowrap; padding:9px 14px; border:1.5px solid var(--border); border-radius:8px; background:white">
-                    <input type="checkbox" name="ver_entregados" value="1"
-                        {{ request('ver_entregados') ? 'checked' : '' }}
-                        style="width:15px; height:15px; accent-color:var(--blue)">
-                    Ver entregados
-                </label>
             </div>
             <div style="display:flex; gap:8px; align-items:flex-end">
                 <button type="submit" class="btn-primary-ta" style="height:40px">
@@ -107,7 +98,32 @@
         </table>
     </div>
     @if($ingresos->hasPages())
-    <div style="padding:16px 20px; border-top:1px solid var(--border)">{{ $ingresos->withQueryString()->links() }}</div>
+    <div style="padding:14px 20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px">
+        <div style="font-size:.82rem; color:var(--muted)">
+            Mostrando {{ $ingresos->firstItem() }}–{{ $ingresos->lastItem() }} de {{ $ingresos->total() }} registros
+        </div>
+        <div style="display:flex; gap:6px">
+            @if($ingresos->onFirstPage())
+            <span style="padding:6px 12px; border-radius:7px; border:1.5px solid var(--border); color:var(--muted); font-size:.84rem; background:var(--card)">‹ Anterior</span>
+            @else
+            <a href="{{ $ingresos->previousPageUrl() }}" style="padding:6px 12px; border-radius:7px; border:1.5px solid var(--border); color:var(--text); font-size:.84rem; background:white; text-decoration:none">‹ Anterior</a>
+            @endif
+
+            @foreach($ingresos->getUrlRange(1, $ingresos->lastPage()) as $page => $url)
+            @if($page == $ingresos->currentPage())
+            <span style="padding:6px 12px; border-radius:7px; background:var(--blue); color:white; font-size:.84rem; font-weight:600">{{ $page }}</span>
+            @else
+            <a href="{{ $url }}" style="padding:6px 12px; border-radius:7px; border:1.5px solid var(--border); color:var(--text); font-size:.84rem; background:white; text-decoration:none">{{ $page }}</a>
+            @endif
+            @endforeach
+
+            @if($ingresos->hasMorePages())
+            <a href="{{ $ingresos->nextPageUrl() }}" style="padding:6px 12px; border-radius:7px; border:1.5px solid var(--border); color:var(--text); font-size:.84rem; background:white; text-decoration:none">Siguiente ›</a>
+            @else
+            <span style="padding:6px 12px; border-radius:7px; border:1.5px solid var(--border); color:var(--muted); font-size:.84rem; background:var(--card)">Siguiente ›</span>
+            @endif
+        </div>
+    </div>
     @endif
 </div>
 

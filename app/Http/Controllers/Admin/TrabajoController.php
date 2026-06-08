@@ -111,9 +111,11 @@ class TrabajoController extends Controller
                 $trabajo->repuestos()->attach($repuestosData);
             }
 
-            // Actualizar estado del ingreso
+            // Actualizar estado del ingreso según el estado del trabajo
             if ($request->estado === 'finalizado') {
                 $ingreso->update(['estado' => 'finalizado']);
+            } elseif ($request->estado === 'en_proceso') {
+                $ingreso->update(['estado' => 'en_proceso']);
             }
         });
 
@@ -155,9 +157,7 @@ class TrabajoController extends Controller
         $ingresos = IngresoVehiculo::with(['vehiculo.marca', 'vehiculo.modelo', 'cliente', 'turno'])
             ->when($request->estado,
                 fn($q) => $q->where('estado', $request->estado),
-                fn($q) => $request->ver_entregados
-                    ? $q
-                    : $q->whereNotIn('estado', ['entregado'])
+                fn($q) => $q->whereNotIn('estado', ['entregado'])
             )
             ->orderBy('created_at', 'desc')
             ->paginate(15);
