@@ -76,6 +76,16 @@ Route::prefix('admin')
             Route::post('/{factura}/anular',         [App\Http\Controllers\Admin\FacturacionController::class, 'anular'])->name('anular');
         });
 
+        // ── Compras ──────────────────────────────────────────────
+        Route::prefix('compras')->name('compras.')->group(function () {
+            Route::get('/',                              [App\Http\Controllers\Admin\OrdenCompraController::class, 'index'])->name('index');
+            Route::get('/crear',                         [App\Http\Controllers\Admin\OrdenCompraController::class, 'crear'])->name('crear');
+            Route::post('/',                             [App\Http\Controllers\Admin\OrdenCompraController::class, 'guardar'])->name('guardar');
+            Route::get('/{orden}',                       [App\Http\Controllers\Admin\OrdenCompraController::class, 'show'])->name('show');
+            Route::post('/{orden}/recibir',              [App\Http\Controllers\Admin\OrdenCompraController::class, 'recibirMercaderia'])->name('recibir');
+            Route::post('/{orden}/cancelar',             [App\Http\Controllers\Admin\OrdenCompraController::class, 'cancelar'])->name('cancelar');
+        });
+
         // ── Inventario ───────────────────────────────────────────
         Route::prefix('inventario')->name('inventario.')->group(function () {
             // Repuestos

@@ -556,7 +556,10 @@
                 <div class="nav-icon"><i class="bi bi-cash-stack"></i></div>
                 <span class="nav-label">Caja</span>
             </a>
-
+            <a href="{{ route('admin.compras.index') }}" class="nav-item {{ request()->routeIs('admin.compras.*') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-cart"></i></div>
+                <span class="nav-label">Compras</span>
+            </a>
             <div class="nav-section-label">Reportes</div>
             <a href="{{ route('admin.reportes.formulario') }}" class="nav-item {{ request()->routeIs('admin.reportes.*') ? 'active' : '' }}">
                 <div class="nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></div>
