@@ -93,6 +93,16 @@ Route::prefix('admin')
             Route::get('/margen',       [App\Http\Controllers\Admin\ContabilidadController::class, 'margen'])->name('margen');
         });
 
+        // ── RRHH ─────────────────────────────────────────────────
+        Route::prefix('rrhh')->name('rrhh.')->group(function () {
+            Route::get('/',                                      [App\Http\Controllers\Admin\RRHHController::class, 'index'])->name('index');
+            Route::get('/{mecanico}',                            [App\Http\Controllers\Admin\RRHHController::class, 'perfil'])->name('perfil');
+            Route::post('/{mecanico}/horas',                     [App\Http\Controllers\Admin\RRHHController::class, 'registrarHoras'])->name('horas');
+            Route::delete('/horas/{hora}',                       [App\Http\Controllers\Admin\RRHHController::class, 'eliminarHoras'])->name('horas.eliminar');
+            Route::post('/{mecanico}/comision',                  [App\Http\Controllers\Admin\RRHHController::class, 'registrarComision'])->name('comision');
+            Route::post('/comisiones/{comision}/pagar',          [App\Http\Controllers\Admin\RRHHController::class, 'pagarComision'])->name('comision.pagar');
+        });
+
         // ── Inventario ───────────────────────────────────────────
         Route::prefix('inventario')->name('inventario.')->group(function () {
             // Repuestos

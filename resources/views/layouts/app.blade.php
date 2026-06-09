@@ -578,7 +578,11 @@
                 <div class="nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></div>
                 <span class="nav-label">Generar Reporte</span>
             </a>
-
+            <div class="nav-section-label">RRHH</div>
+            <a href="{{ route('admin.rrhh.index') }}" class="nav-item {{ request()->routeIs('admin.rrhh.*') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-people"></i></div>
+                <span class="nav-label">Recursos Humanos</span>
+            </a>
             @if(auth()->user()->esAdmin())
             <div class="nav-section-label">Administración</div>
             <a href="{{ route('admin.usuarios.index') }}" class="nav-item {{ request()->routeIs('admin.usuarios.*') ? 'active' : '' }}">

@@ -102,4 +102,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\TrabajoRealizado::class, 'mecanico_id');
     }
+    public function horasTrabajo()
+    {
+        return $this->hasMany(HoraTrabajo::class, 'mecanico_id');
+    }
+
+    public function comisiones()
+    {
+        return $this->hasMany(Comision::class, 'mecanico_id');
+    }
 }
