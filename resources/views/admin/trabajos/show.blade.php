@@ -216,9 +216,19 @@
                 <div class="ta-card-title"><i class="bi bi-gear"></i> Acciones</div>
             </div>
             <div style="padding:16px; display:flex; flex-direction:column; gap:10px">
-
+                @if(in_array($ingreso->estado, ['finalizado','entregado']))
+                    @php $facturaExiste = \App\Models\Factura::where('ingreso_id', $ingreso->id)->where('estado','!=','anulada')->first(); @endphp
+                    @if($facturaExiste)
+                    <a href="{{ route('admin.facturacion.show', $facturaExiste) }}" class="btn-primary-ta" style="width:100%; justify-content:center">
+                        <i class="bi bi-receipt"></i> Ver Factura {{ $facturaExiste->numero }}
+                    </a>
+                    @else
+                    <a href="{{ route('admin.facturacion.crear', $ingreso) }}" class="btn-primary-ta" style="width:100%; justify-content:center">
+                        <i class="bi bi-receipt"></i> Generar Factura
+                    </a>
+                    @endif
+                @endif
                 @if($ingreso->estado === 'finalizado' && !$ingreso->egreso)
-                {{-- Registrar egreso --}}
                 <button class="btn-ok-ta" style="width:100%; justify-content:center"
                     onclick="document.getElementById('modalEgreso').style.display='flex'">
                     <i class="bi bi-box-arrow-right"></i> Registrar Entrega

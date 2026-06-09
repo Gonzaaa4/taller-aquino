@@ -547,6 +547,16 @@
                 @if($alertas > 0)<span class="nav-badge warn">{{ $alertas }}</span>@endif
             </a>
 
+            <div class="nav-section-label">Finanzas</div>
+            <a href="{{ route('admin.facturacion.index') }}" class="nav-item {{ request()->routeIs('admin.facturacion.index') || request()->routeIs('admin.facturacion.show') || request()->routeIs('admin.facturacion.crear') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-receipt"></i></div>
+                <span class="nav-label">Facturación</span>
+            </a>
+            <a href="{{ route('admin.facturacion.caja') }}" class="nav-item {{ request()->routeIs('admin.facturacion.caja') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-cash-stack"></i></div>
+                <span class="nav-label">Caja</span>
+            </a>
+
             <div class="nav-section-label">Reportes</div>
             <a href="{{ route('admin.reportes.formulario') }}" class="nav-item {{ request()->routeIs('admin.reportes.*') ? 'active' : '' }}">
                 <div class="nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></div>

@@ -64,6 +64,18 @@ Route::prefix('admin')
             Route::post('/{ingreso}/egreso',             [TrabajoController::class, 'registrarEgreso'])->name('egreso');
         });
 
+        // ── Facturación y Caja ───────────────────────────────────
+        Route::prefix('facturacion')->name('facturacion.')->group(function () {
+            Route::get('/',                          [App\Http\Controllers\Admin\FacturacionController::class, 'index'])->name('index');
+            Route::get('/caja',                      [App\Http\Controllers\Admin\FacturacionController::class, 'caja'])->name('caja');
+            Route::post('/caja/movimiento',          [App\Http\Controllers\Admin\FacturacionController::class, 'guardarMovimiento'])->name('caja.movimiento');
+            Route::get('/crear/{ingreso}',           [App\Http\Controllers\Admin\FacturacionController::class, 'crear'])->name('crear');
+            Route::post('/crear/{ingreso}',          [App\Http\Controllers\Admin\FacturacionController::class, 'guardar'])->name('guardar');
+            Route::get('/{factura}',                 [App\Http\Controllers\Admin\FacturacionController::class, 'show'])->name('show');
+            Route::post('/{factura}/pago',           [App\Http\Controllers\Admin\FacturacionController::class, 'registrarPago'])->name('pago');
+            Route::post('/{factura}/anular',         [App\Http\Controllers\Admin\FacturacionController::class, 'anular'])->name('anular');
+        });
+
         // ── Inventario ───────────────────────────────────────────
         Route::prefix('inventario')->name('inventario.')->group(function () {
             // Repuestos
