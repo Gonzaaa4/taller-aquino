@@ -560,6 +560,19 @@
                 <div class="nav-icon"><i class="bi bi-cart"></i></div>
                 <span class="nav-label">Compras</span>
             </a>
+            <div class="nav-section-label">Contabilidad</div>
+            <a href="{{ route('admin.contabilidad.libro') }}" class="nav-item {{ request()->routeIs('admin.contabilidad.libro') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-journal-text"></i></div>
+                <span class="nav-label">Libro Contable</span>
+            </a>
+            <a href="{{ route('admin.contabilidad.rentabilidad') }}" class="nav-item {{ request()->routeIs('admin.contabilidad.rentabilidad') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <span class="nav-label">Rentabilidad</span>
+            </a>
+            <a href="{{ route('admin.contabilidad.margen') }}" class="nav-item {{ request()->routeIs('admin.contabilidad.margen') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-percent"></i></div>
+                <span class="nav-label">Margen por Trabajo</span>
+            </a>
             <div class="nav-section-label">Reportes</div>
             <a href="{{ route('admin.reportes.formulario') }}" class="nav-item {{ request()->routeIs('admin.reportes.*') ? 'active' : '' }}">
                 <div class="nav-icon"><i class="bi bi-file-earmark-bar-graph"></i></div>

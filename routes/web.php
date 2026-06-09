@@ -86,6 +86,13 @@ Route::prefix('admin')
             Route::post('/{orden}/cancelar',             [App\Http\Controllers\Admin\OrdenCompraController::class, 'cancelar'])->name('cancelar');
         });
 
+        // ── Contabilidad ─────────────────────────────────────────
+        Route::prefix('contabilidad')->name('contabilidad.')->group(function () {
+            Route::get('/libro',        [App\Http\Controllers\Admin\ContabilidadController::class, 'libro'])->name('libro');
+            Route::get('/rentabilidad', [App\Http\Controllers\Admin\ContabilidadController::class, 'rentabilidad'])->name('rentabilidad');
+            Route::get('/margen',       [App\Http\Controllers\Admin\ContabilidadController::class, 'margen'])->name('margen');
+        });
+
         // ── Inventario ───────────────────────────────────────────
         Route::prefix('inventario')->name('inventario.')->group(function () {
             // Repuestos
