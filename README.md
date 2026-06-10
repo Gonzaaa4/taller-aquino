@@ -1,58 +1,216 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🔧 Taller Aquino — Sistema de Gestión ERP
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistema de gestión integral para talleres mecánicos desarrollado con Laravel 11 y MySQL. Cubre todo el ciclo operativo del taller: desde la solicitud de turnos hasta la facturación, contabilidad y gestión de recursos humanos.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Descripción
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Taller Aquino es un sistema ERP (Enterprise Resource Planning) diseñado para digitalizar y optimizar la operación de un taller mecánico. Permite gestionar turnos, órdenes de trabajo, inventario, facturación, compras a proveedores, contabilidad básica y recursos humanos desde una sola plataforma, con roles diferenciados para administradores, mecánicos y clientes.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Tecnologías utilizadas
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Backend:** PHP 8.3 · Laravel 11
+- **Base de datos:** MySQL (Laragon)
+- **Frontend:** Blade Templates · Bootstrap Icons · CSS Variables
+- **Tipografía:** Google Fonts (Oswald + Source Sans 3)
+- **Gráficos:** Chart.js
+- **Control de versiones:** Git · GitHub
+- **Entorno local:** Laragon
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## ✨ Funcionalidades principales
 
-## Agentic Development
+### 👥 Sistema de roles
+El sistema maneja 4 roles con accesos diferenciados:
+- **Admin** — acceso total a todos los módulos
+- **Administrativo** — operaciones, inventario y finanzas
+- **Mecánico** — órdenes de trabajo e inventario
+- **Cliente** — portal propio con turnos, vehículos y facturas
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+---
+
+### 📅 Módulo de Turnos
+- Solicitud de turnos online desde el portal del cliente
+- Solicitud de turnos sin cuenta (modo invitado)
+- Registro de turnos presenciales desde el panel admin
+- Calendario visual con horarios disponibles
+- Confirmación de turno con asignación de mecánico (ordenados por carga de trabajo)
+- Número de seguimiento único por turno
+- Cancelación con límite de 2 por mes y suspensión automática
+- Agenda visual para administradores
+- Filtros por estado y fecha
+
+---
+
+### 🔧 Módulo de Órdenes de Trabajo
+- Registro de ingreso de vehículos al taller desde turnos confirmados
+- Registro de trabajos realizados con tipo de servicio, descripción y costos
+- Gestión de repuestos utilizados con descuento automático de stock
+- Estados del vehículo: ingresado → en proceso → finalizado → entregado
+- Registro de egreso con firma de conformidad del cliente
+- Filtros por estado incluyendo vehículos entregados
+
+---
+
+### 📦 Módulo de Inventario
+- Alta, edición y control de repuestos
+- Control de stock con alertas de stock bajo
+- Ajuste de stock manual
+- Integración con órdenes de trabajo (descuento automático al registrar trabajos)
+- Gestión de herramientas
+
+---
+
+### 💰 Módulo de Facturación y Caja
+- Generación de facturas y presupuestos desde órdenes finalizadas
+- Precios de venta manuales (mano de obra + repuestos + descuento)
+- Numeración correlativa automática (FAC-00001)
+- Registro de pagos por múltiples métodos (efectivo, transferencia, tarjeta, cheque)
+- Estados de factura: pendiente, pago parcial, pagada, anulada
+- Caja diaria con ingresos, egresos y saldo
+- Registro de movimientos manuales de caja (gastos, sueldos, servicios)
+- Selector de fecha para consultar cualquier día
+
+---
+
+### 🛒 Módulo de Compras y Proveedores
+- Gestión de proveedores (alta, edición, estado activo/inactivo)
+- Creación de órdenes de compra con múltiples repuestos
+- Numeración correlativa automática (OC-00001)
+- Recepción parcial o total de mercadería
+- Actualización automática de stock al recibir mercadería
+- Actualización automática del costo del repuesto
+- Registro automático del egreso en caja al recibir
+- Estados: enviada, recibida parcial, recibida, cancelada
+
+---
+
+### 📊 Módulo de Contabilidad
+- **Libro de ingresos y egresos** — movimientos del período con filtro por mes y año
+- **Rentabilidad mensual** — tabla anual con ingresos, egresos, ganancia y margen por mes con gráfico de barras (Chart.js)
+- **Margen por trabajo** — comparación costo vs precio de venta por factura con filtro por rango de fechas
+- KPIs visuales en todos los apartados
+
+---
+
+### 👷 Módulo de RRHH
+- Panel con KPIs del equipo de mecánicos
+- Perfil individual con filtro por mes y año
+- Registro de horas trabajadas (normales y extra)
+- Comisiones por trabajo sobre mano de obra con porcentaje configurable
+- Pago de comisiones con registro automático en caja como egreso
+- Historial completo por mecánico
+
+---
+
+### 🧾 Portal del Cliente
+- Dashboard con resumen de turnos activos
+- Solicitud de turnos con calendario visual y selección de horario
+- Marca y modelo personalizado ("Otra" opción)
+- Seguimiento del estado de reparación por número de seguimiento
+- Historial de vehículos registrados
+- **Mis Facturas** — vista de facturas con estado de pago y saldo pendiente
+- Consulta de estado sin necesidad de cuenta
+
+---
+
+## 🗂️ Estructura de la base de datos
+
+El sistema cuenta con las siguientes tablas principales:
+
+`users` · `vehiculos` · `marcas` · `modelos` · `turnos` · `ingresos_vehiculo` · `trabajos_realizados` · `repuestos` · `herramientas` · `proveedores` · `ordenes_compra` · `ordenes_compra_items` · `recepciones_compra` · `facturas` · `pagos` · `movimientos_caja` · `horas_trabajo` · `comisiones`
+
+---
+
+## ⚙️ Instalación local
+
+### Requisitos previos
+- PHP 8.3+
+- MySQL 8+
+- Composer
+- Laragon (recomendado) o cualquier servidor local
+
+### Pasos
 
 ```bash
-composer require laravel/boost --dev
+# 1. Clonar el repositorio
+git clone https://github.com/Gonzaaa4/taller-aquino.git
+cd taller-aquino
 
-php artisan boost:install
+# 2. Instalar dependencias
+composer install
+
+# 3. Configurar el entorno
+cp .env.example .env
+php artisan key:generate
+
+# 4. Configurar la base de datos en .env
+DB_DATABASE=taller_aquino
+DB_USERNAME=root
+DB_PASSWORD=
+
+# 5. Ejecutar migraciones y seeders
+php artisan migrate --seed
+
+# 6. Iniciar el servidor
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Acceso al sistema
 
-## Contributing
+| Rol | Email | Contraseña |
+|-----|-------|------------|
+| Admin | admin@talleraquino.com | Admin1234! |
+| Administrativo | administrativa@talleraquino.com | Admin1234! |
+| Mecánico | mecanico1@talleraquino.com | Admin1234! |
+| Cliente | cliente@ejemplo.com | Cliente1234! |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 📁 Estructura del proyecto
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
+app/
+├── Http/Controllers/
+│   ├── Admin/          # Controladores del panel admin
+│   └── Cliente/        # Controladores del portal cliente
+├── Models/             # Modelos Eloquent
+resources/
+├── views/
+│   ├── admin/          # Vistas del panel admin
+│   ├── cliente/        # Vistas del portal cliente
+│   ├── auth/           # Login y registro
+│   └── layouts/        # Layout principal
+routes/
+└── web.php             # Todas las rutas del sistema
+database/
+└── migrations/         # Migraciones de la base de datos
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🔐 Seguridad
 
-## License
+- Autenticación propia con hash de contraseñas (bcrypt)
+- Middleware de roles para proteger rutas por perfil
+- Verificación de pertenencia en recursos del cliente (facturas, turnos, vehículos)
+- Tokens CSRF en todos los formularios
+- Validación server-side en todos los endpoints
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 👨‍💻 Autor
+
+Desarrollado por **Gonzalo Aquino** como proyecto personal de portfolio.
+
+- GitHub: [@Gonzaaa4](https://github.com/Gonzaaa4)
+
+---
+
+## 📄 Licencia
+
+Este proyecto es de uso personal y educativo.
