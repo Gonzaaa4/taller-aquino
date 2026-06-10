@@ -511,6 +511,10 @@
                 <div class="nav-icon"><i class="bi bi-car-front"></i></div>
                 <span class="nav-label">Mis Vehículos</span>
             </a>
+            <a href="{{ route('cliente.facturas.index') }}" class="nav-item {{ request()->routeIs('cliente.facturas.*') ? 'active' : '' }}">
+                <div class="nav-icon"><i class="bi bi-receipt"></i></div>
+                <span class="nav-label">Mis Facturas</span>
+            </a>
             <a href="{{ route('cliente.consultar-estado') }}" class="nav-item {{ request()->routeIs('cliente.consultar-estado') ? 'active' : '' }}">
                 <div class="nav-icon"><i class="bi bi-search"></i></div>
                 <span class="nav-label">Estado de Reparación</span>

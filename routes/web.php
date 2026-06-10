@@ -177,6 +177,12 @@ Route::prefix('cliente')
             Route::post('/',         [VehiculoController::class, 'store'])->name('guardar');
         });
 
+        // Facturas del cliente
+        Route::prefix('facturas')->name('facturas.')->group(function () {
+            Route::get('/',              [\App\Http\Controllers\Cliente\FacturaController::class, 'index'])->name('index');
+            Route::get('/{factura}',     [\App\Http\Controllers\Cliente\FacturaController::class, 'show'])->name('show');
+        });
+
         // Consultar estado de reparación (pública pero también accesible desde el panel)
         Route::match(['get','post'], '/consultar-estado', [ClienteTurnoController::class, 'consultarEstado'])->name('consultar-estado');
     });
